@@ -1,0 +1,277 @@
+================================================================================
+  ESTIMATIZ V6 — NOTES DE CHANTIER
+  Démarré le 16/04/2026
+================================================================================
+
+
+────────────────────────────────────────────────────────────────────────────────
+CONTEXTE
+────────────────────────────────────────────────────────────────────────────────
+
+Refonte de la base de données + adaptation complète d'Estimatiz.
+Nouvelle base plus propre : doublons traités, géolocalisation présente,
+structure normalisée snake_case.
+
+Nom retenu pour la nouvelle base : DVF_France
+(prévu pour couvrir toute la France, pas seulement Paris)
+
+Sources :
+  - Structure  : _Base/Table SQL Geoloc.txt
+  - Données    : _Base/{year}_full.csv (2020–2025, format géoloc V6 virgule-séparé)
+  - Ancien CSV : _Base/ValeursFoncieres-20XX.csv (2014–2019, format legacy pipe-séparé)
+
+Couverture initiale : 2025 (géoloc)
+Couverture cible    : 2014 → 2025 (atteinte après import 2020–2024 ci-dessous)
+
+
+────────────────────────────────────────────────────────────────────────────────
+ÉTAPE 1 — MAPPING ANCIENNES → NOUVELLES COLONNES  [TERMINÉE]
+────────────────────────────────────────────────────────────────────────────────
+^
+COLONNES SUPPRIMÉES (absentes de la nouvelle structure)
+  - Identifiant de document
+  - Reference document
+  - 1/2/3/4/5 Articles CGI
+  - Identifiant local
+  - Prefixe de section   (encodé dans id_parcelle)
+  - Section              (encodé dans id_parcelle, chars 9-10)
+  - No plan              (encodé dans id_parcelle, chars 11-14)
+
+COLONNES AJOUTÉES
+  - id_mutation          : identifiant de mutation (groupe les lignes d'une même vente)
+  - id_parcelle          : identifiant cadastral 14 chars (ex: "75104000AJ0071")
+  - ancien_id_parcelle
+  - ancien_code_commune
+  - ancien_nom_commune
+  - longitude            : DECIMAL(10,7), WGS-84
+  - latitude             : DECIMAL(10,7), WGS-84
+
+MAPPING COLONNES (ancienne → nouvelle)
+  No disposition              → numero_disposition
+  Date mutation (DD/MM/YYYY)  → date_mutation (YYYY-MM-DD ISO)  ← format changé
+  Nature mutation             → nature_mutation
+  Valeur fonciere (varchar,)  → valeur_fonciere (DECIMAL, .)    ← type changé
+  No voie                     → adresse_numero
+  B/T/Q                       → adresse_suffixe
+  Type de voie + Voie         → adresse_nom_voie                ← FUSION (ex: "RUE DE RIVOLI")
+  Code voie                   → adresse_code_voie               (valeur identique ✓)
+  Code postal (INT)           → code_postal (VARCHAR 5)         ← type changé
+  Commune ("PARIS 01")        → nom_commune ("Paris 1er...")    ← format changé
+  Code departement            → code_departement
+  Code commune (INT 3)        → code_commune (VARCHAR 5)        ← ex: "75"+"104" = "75104"
+  No Volume                   → numero_volume
+  1er lot … 5eme lot          → lot1_numero … lot5_numero
+  Surface Carrez du 1er lot … → lot1_surface_carrez …          ← type changé (DECIMAL)
+  Nombre de lots              → nombre_lots
+  Code type local             → code_type_local
+  Type local                  → type_local                       (identique ✓)
+  Surface reelle bati         → surface_reelle_bati             ← type changé (DECIMAL)
+  Nombre pieces principales   → nombre_pieces_principales
+  Nature culture              → nature_culture
+  Nature culture speciale     → nature_culture_speciale
+  Surface terrain             → surface_terrain
+
+POINTS CLÉS RELEVÉS SUR LES DONNÉES PARIS (fichier 2025)
+  - nom_commune      = "Paris 4e Arrondissement" (accentué, lisible)
+  - code_commune     = "75104" (INSEE, distingue chaque arrondissement)
+  - adresse_code_voie = même valeur FANTOIR 4 chars qu'avant → continuité assurée
+  - lot1_surface_carrez = "93.54" (point décimal, plus de REPLACE nécessaire)
+  - date_mutation    = "2025-01-03" (ISO, plus de STR_TO_DATE nécessaire)
+  - id_parcelle      = "75104000AJ0071"
+      → section = SUBSTRING(id_parcelle, 9, 2) = "AJ"
+      → no_plan = SUBSTRING(id_parcelle, 11, 4) = "0071"
+
+
+────────────────────────────────────────────────────────────────────────────────
+ÉTAPE 2 — CRÉATION DE LA NOUVELLE BASE  [TERMINÉE]
+────────────────────────────────────────────────────────────────────────────────
+
+[x] Générer le CREATE TABLE dvf_france (snake_case, types propres)
+    → _Base/create_dvf_france.sql
+[x] Créer la base DVF_France dans MySQL local
+[x] Importer ValeursFoncieres-2025_geoloc.csv (France entière)
+    → _Base/import_dvf_france.py  — 1 387 077 lignes, 0 erreur, ~250s
+[x] Vérifier cohérence des données importées (COUNT, exemples Paris)
+    → 31 405 lignes Paris (code_commune LIKE '751%')
+    → 1 381 304 lignes géolocalisées
+    → Période : 2025-01-01 → 2025-06-30
+    → nom_commune "Paris 4e Arrondissement", code_commune "75104" ✓
+    → adresse_nom_voie "RUE DE RIVOLI", adresse_code_voie "8249" ✓
+[x] Créer les index optimisés pour les patterns de requête Estimatiz
+    → idx_code_voie_commune, idx_nom_voie_commune, idx_code_commune,
+      idx_code_postal, idx_date_mutation, idx_type_local, idx_id_mutation,
+      idx_id_parcelle, idx_adresse_nom_voie (ajouté pour prefix search)
+
+NOTES STRUCTURE EFFECTIVE
+  adresse_code_voie : CHAR(4), ex "8249", "B078" (FANTOIR identique à l'ancien)
+  adresse_nom_voie  : type+nom fusionnés, abbréviés : "AV", "BD", "RUE", "CHE", "RTE"...
+                      SAINT parfois abrégé "ST", parfois écrit en entier → incohérent
+  nom_commune       : "Paris 8e Arrondissement" (accentué, lisible)
+  code_commune      : "75108" (INSEE 5 chars, Paris 1er=75101 ... 20ème=75120)
+                      Lyon 1er=69381...9ème=69389, Marseille 1er=13201...16ème=13216
+
+
+────────────────────────────────────────────────────────────────────────────────
+ÉTAPE 3 — ADAPTATION ESTIMATIZ (partielle, 2020–2025)  [TERMINÉE]
+────────────────────────────────────────────────────────────────────────────────
+
+
+GAINS TECHNIQUES RÉALISÉS
+  [x] Plus de STR_TO_DATE() sur les dates  (date_mutation = DATE ISO)
+  [x] Plus de REPLACE(',','.') sur les valeurs  (valeur_fonciere = DECIMAL)
+  [x] Plus de coercion INT/VARCHAR sur code_postal  (VARCHAR 5)
+  [x] autocomplete simplifié : adresse_nom_voie LIKE 'AV FOCH%'
+  [x] Géolocalisation disponible (longitude/latitude en base)
+
+[x] Adapter config.local.php : DB_NAME='DVF_France', DB_TABLE_DVF='dvf_france'
+[x] Adapter api/autocomplete.php  (V3.0)
+    - adresse_nom_voie (type+nom fusionnés) → prefix/keyword search
+    - nom_commune LIKE 'Paris 8%' (détecte "paris 8", "paris viii"...)
+    - code_commune exact pour Paris/Lyon/Marseille arrondissements
+    - section = SUBSTRING(id_parcelle, 9, 2)
+    - typeUserToDb : "avenue"→"AV", "boulevard"→"BD", "chemin"→"CHE"...
+    - voieWordNorm : "saint"→"ST" etc.
+    - Paliers S/A/A2/B/B2/B2b/C
+    - type_voie='' dans la sortie (compat descendante)
+    CORRECTIONS POST-TESTS (17/04/2026) :
+    - Palier S : commune min 3 chars (évitait "RUE DE" → Decines via "DE")
+    - Palier A+B : ORDER BY Paris (75xxx) en premier si pas de ville précisée
+    - Palier B2b : fallback tokens bruts (SAINT vs ST incohérence base)
+[x] Adapter api/surface.php  (V3.0)
+    - lot1_surface_carrez, surface_reelle_bati, adresse_suffixe, nom_commune
+    - Level 1 exact : nom_commune = :commune (exact) + adresse_nom_voie exact
+    - Level 2 fallback : adresse_code_voie + nom_commune LIKE
+    - Level 3 fallback : adresse_nom_voie exact + nom_commune LIKE
+    - p20/p50/p80 et samples arrondis (round)
+[x] Adapter api/mutations.php  (V3.0)
+    - valeur_fonciere DECIMAL (plus de toFloat/REPLACE)
+    - date_mutation DATE ISO (ORDER BY direct)
+    - lot1_numero…lot5_numero, lot1_surface_carrez
+    - nombre_pieces_principales
+[x] Adapter api/prix-m2.php  (V3.0)
+    - statsBlock() avec p20/p80 (cohérent avec le reste)
+    - YEAR(date_mutation) pour filtre année
+    - adresse_nom_voie (fusionné) en mode rues
+    - cacheKey préfixé "pm2v6_" pour invalidation cache
+[x] Tester le parcours complet index → estimation → results  (17/04/2026)
+    - APIs vérifiées : autocomplete, surface, mutations, prix-m2 ✓
+    - Bugs autocomplete corrigés (priorité Paris, Palier S, SAINT/ST)
+
+ÉTAT BASE DVF_France (23/04/2026 — après import complet 2014–2025)
+  2014 :     800 753  |  2015 :     896 692  |  2016 :     950 584
+  2017 :   1 087 740  |  2018 :     754 629  |  2019 :     331 500
+  2020 :     778 406  |  2021 :   1 620 942  |  2022 :   1 571 869
+  2023 :   1 269 045  |  2024 :   1 138 722  |  2025 :     467 492
+  Total lignes  : 11 668 374
+  Géolocalisées :  6 729 399 (57.7%)
+  Période       : 2014-01-01 → 2025-06-30
+  Import        : 12 fichiers, 4472s (~1h14), débit ~2 500 lignes/s
+
+
+────────────────────────────────────────────────────────────────────────────────
+ÉTAPE 4 — INTÉGRATION DONNÉES HISTORIQUES (2014–2019)  [TERMINÉE]
+────────────────────────────────────────────────────────────────────────────────
+
+Scripts créés :
+  _Base/dedup_legacy.py        — dédoublonnage fichiers legacy (pipe-séparés)
+  _Base/convert_legacy_csv.py  — conversion legacy → format V6 (virgule-séparé)
+  _Base/dedup_geoloc.py        — dédoublonnage 2025 par id_mutation
+  _Base/import_dvf_france.py   — import CSV V6 dans dvf_france
+
+Pipeline exécuté (2014–2019) :
+  1. dedup_legacy.py 2014 2015 2016 2017 2018 2019
+     → 14 920 271 lignes → 4 821 898 conservées (~32%)
+     → produit ValeursFoncieres-{year}_clean.csv
+  2. convert_legacy_csv.py 2014 2015 2016 2017 2018 2019
+     → produit ValeursFoncieres-{year}_v6.csv (format V6, virgule-séparé)
+  3. import_dvf_france.py ValeursFoncieres-{year}_v6.csv --truncate (1ère année)
+     puis import_dvf_france.py ValeursFoncieres-{year}_v6.csv (années suivantes)
+
+Pipeline exécuté (2025 géoloc) :
+  1. dedup_geoloc.py 2025
+     → 1 387 077 lignes → 467 492 conservées (33.7%)
+  2. import_dvf_france.py ValeursFoncieres-2025_geoloc_clean.csv
+
+[x] Créer _Base/convert_legacy_csv.py
+[x] Créer _Base/dedup_legacy.py
+[x] Créer _Base/dedup_geoloc.py
+[x] Tester conversion et import (2014–2019 + 2025)
+[x] Ajouter 2020–2024  → voir ÉTAPE 4b
+[ ] Vérifier cohérence adresse_code_voie entre legacy et 2020+
+
+
+────────────────────────────────────────────────────────────────────────────────
+ÉTAPE 4b — INTÉGRATION DONNÉES 2020–2024  [TERMINÉE]
+────────────────────────────────────────────────────────────────────────────────
+
+Réalisé le 23/04/2026.
+
+FORMAT : les fichiers 2020–2024 sont au format géoloc V6 (virgule-séparé, même
+structure que 2025) — pas le format legacy. Dedup par id_mutation (dedup_geoloc.py).
+
+Sources brutes conservées :
+  _Base/2020_full.csv  (342 Mo)  |  _Base/2021_full.csv  (777 Mo)
+  _Base/2022_full.csv  (777 Mo)  |  _Base/2023_full.csv  (631 Mo)
+  _Base/2024_full.csv  (578 Mo)
+
+Dedup exécuté (python3 dedup_geoloc.py <fichier>) :
+  Année   Lus         Doublons    Sans surf   Gardés      %      Durée
+  2020    2 065 003   1 230 480      56 117     778 406  37.7%    23s
+  2021    4 674 176   2 947 966     105 268   1 620 942  34.7%    64s
+  2022    4 675 007   2 986 869     116 269   1 571 869  33.6%    65s
+  2023    3 812 327   2 451 909      91 373   1 269 045  33.3%    41s
+  2024    3 489 149   2 262 697      87 730   1 138 722  32.6%    35s
+  TOTAL  18 715 662                           6 379 084         228s
+
+Fichiers produits :
+  _Base/ValeursFoncieres-2020_v6.csv  (131 Mo)
+  _Base/ValeursFoncieres-2021_v6.csv  (272 Mo)
+  _Base/ValeursFoncieres-2022_v6.csv  (264 Mo)
+  _Base/ValeursFoncieres-2023_v6.csv  (212 Mo)
+  _Base/ValeursFoncieres-2024_v6.csv  (190 Mo)
+
+[x] Dedup 2020–2024 avec dedup_geoloc.py
+[x] Import dans MySQL — via import_dvf_france_automatique.py (23/04/2026)
+    TRUNCATE + 12 fichiers (2014–2025), 11 668 374 lignes, 4472s, 0 erreur
+
+Nettoyage _Base/ réalisé (23/04/2026) :
+  - Supprimé : fichiers legacy originaux (valeursfoncieres-201X.csv), intermédiaires
+    _clean legacy, anciens ValeursFoncieres-202X.csv pipe-séparés, ValeursFoncieres-2025.csv
+  - Créé     : _Base/V5/  → anciens scripts archivés (pipeline V5, dedup_legacy, convert_legacy)
+  - Actifs   : _Base/dedup_geoloc.py + _Base/import_dvf_france.py
+
+Pour ajouter une nouvelle année (ex: 2026) :
+  1. Déposer 2026_full.csv dans _Base/
+  2. python3 dedup_geoloc.py 2026_full.csv
+     → produit 2026_full_clean.csv  (renommer en ValeursFoncieres-2026_v6.csv)
+  3. python3 import_dvf_france.py ValeursFoncieres-2026_v6.csv
+
+
+────────────────────────────────────────────────────────────────────────────────
+ÉTAPE 5 — FINALISATION  [À FAIRE]
+────────────────────────────────────────────────────────────────────────────────
+
+[x] Importer 2020–2025 dans MySQL → fait le 23/04/2026 (11 668 374 lignes, 0 erreur)
+[ ] Adapter api/export.php (actuellement non connecté à l'interface)
+[ ] Adapter api/estimate.php (actuellement orphelin, décider si à garder)
+[ ] Optimiser les requêtes avec les nouveaux index
+[ ] Activer le filtre géographique (rayon autour d'une adresse) grâce à lat/lon
+[ ] Tests globaux sur toutes les pages
+[ ] Mettre à jour index.php : chiffre "423 000" → dynamique ou mis à jour
+[ ] Déployer sur o2switch
+
+
+────────────────────────────────────────────────────────────────────────────────
+CORRECTIONS DÉJÀ FAITES EN V5 (avant démarrage V6)
+────────────────────────────────────────────────────────────────────────────────
+
+[x] autocomplete.php : COMMUNE_COLLATE utf8mb4 → utf8_general_ci (bug critique)
+[x] autocomplete.php : détection ville seule en fin de saisie ("paris" sans arrondissement)
+[x] autocomplete.php : zéro-padding commune "PARIS 8" → "PARIS 08"
+[x] surface.php      : B/T/Q = '' ne matchait pas NULL → corrigé
+[x] surface.php      : p25/p75 → p20/p80
+[x] mutations.php    : p25/p75 → p20/p80
+[x] results.php      : affichage "P25–P75" → "P20–P80"
+
+
+================================================================================

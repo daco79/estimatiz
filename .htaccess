@@ -1,0 +1,30 @@
+# Page d'accueil par défaut
+DirectoryIndex index.php index.html
+
+# Compression des assets texte si le module est disponible
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css text/javascript application/javascript application/json image/svg+xml
+</IfModule>
+
+# Cache navigateur des fichiers statiques
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  ExpiresByType image/jpeg "access plus 1 month"
+  ExpiresByType image/png "access plus 1 month"
+  ExpiresByType image/svg+xml "access plus 1 month"
+  ExpiresByType image/webp "access plus 1 month"
+</IfModule>
+
+# Bloquer les fichiers privés et le cache serveur
+<FilesMatch "^(config\.(local|o2switch)\.php|test_connexion\.php)$">
+  Require all denied
+</FilesMatch>
+
+RedirectMatch 403 ^/\.cache(/|$)
+
+# Compatibilité avec les anciennes URLs .html
+RewriteEngine On
+RewriteCond %{THE_REQUEST} \s/+(.+?)\.html[\s?] [NC]
+RewriteRule ^(.+)\.html$ $1.php [R=301,L]

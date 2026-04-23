@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c ' *)",
+      "Bash(mysql -u root estimatiz -e \"SELECT YEAR\\(date_mutation\\) yr, COUNT\\(*\\) cnt FROM dvf_france WHERE date_mutation IS NOT NULL GROUP BY yr ORDER BY yr; SELECT COUNT\\(*\\) total FROM dvf_france;\")",
+      "Bash(/Applications/XAMPP/xamppfiles/bin/mysql -u root estimatiz -e \"SELECT YEAR\\(date_mutation\\) yr, COUNT\\(*\\) cnt FROM dvf_france WHERE date_mutation IS NOT NULL GROUP BY yr ORDER BY yr; SELECT COUNT\\(*\\) total FROM dvf_france;\")",
+      "Bash(echo \"PID=$!\")",
+      "Bash(python3 -u /Applications/XAMPP/xamppfiles/htdocs/estimatiz/_Base/build_dvf_voies.py)",
+      "Bash(curl -s 'http://localhost/estimatiz/api/autocomplete.php?q=rue+de+rivoli+paris&limit=5')",
+      "Bash(curl -w \"Temps: %{time_total}s\\\\n\" -s 'http://localhost/estimatiz/api/autocomplete.php?q=bd+haussmann&limit=5')",
+      "Bash(curl -w \"Temps: %{time_total}s\\\\n\" -s 'http://localhost/estimatiz/api/autocomplete.php?q=rue+de+rivoli+paris&limit=5' -o /dev/null)",
+      "Bash(curl -w \"Temps: %{time_total}s\\\\n\" -s 'http://localhost/estimatiz/api/autocomplete.php?q=10+av+foch+paris+16&limit=5')",
+      "Bash(curl -w \"\\\\nTemps: %{time_total}s\\\\n\" -s 'http://localhost/estimatiz/api/autocomplete.php?q=bd+haussmann&limit=5')",
+      "Bash(curl -w \"\\\\nTemps: %{time_total}s\\\\n\" -s 'http://localhost/estimatiz/api/autocomplete.php?q=rue+de+rivoli+paris+1&limit=5')",
+      "Bash(curl -w \"\\\\nTemps: %{time_total}s\\\\n\" -s 'http://localhost/estimatiz/api/autocomplete.php?q=10+av+foch+paris+16&limit=5')"
+    ]
+  }
+}

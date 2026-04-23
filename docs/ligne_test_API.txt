@@ -1,0 +1,21 @@
+VOici le commande pour tester les API
+
+http://localhost/estimatiz/api/autocomplete.php?q=rivoli
+
+http://localhost/estimatiz/api/autocomplete.php?q=75011
+
+http://localhost/estimatiz/api/pieces.php?code_voie=voltaire&commune=PARIS
+
+
+
+https://localhost/estimatiz/api/autocomplete_test.php
+http://localhost/estimatiz/api/autocomplete.php?q=rivoli
+
+http://localhost/estimatiz/api/surface.php?code_voie=7510603&commune=Paris
+
+http://localhost/estimatiz/api/mutations.php?code_voie=6918&commune=Paris&no_voie=128&type_voie=RUE&voie=ORDENER
+
+
+DELETE FROM data_paris_I
+WHERE `Nombre de lots` = 0
+   OR `Nombre de lots` IS NULL;
