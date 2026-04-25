@@ -37,7 +37,7 @@ function navClass(string $key, string $active, string $extra = ''): string {
       <li><a href="<?= $navRoot ?>index.php" <?= navClass('accueil', $navActive) ?>>Accueil</a></li>
       <li><a href="<?= $navRoot ?>estimation.php" <?= navClass('estimer', $navActive, 'sitenav-cta') ?>>Estimer un bien</a></li>
       <li><a href="<?= $navRoot ?>prix-m2.php" <?= navClass('prix', $navActive) ?>>Prix au m²</a></li>
-      <li><a <?= navClass('ventes', $navActive, 'disabled') ?> title="Bientôt disponible">Dernières ventes</a></li>
+      <li><a href="<?= $navRoot ?>ventes.php" <?= navClass('ventes', $navActive) ?>>Dernières ventes</a></li>
       <li class="nav-dropdown">
         <a href="#" <?= in_array($navActive, ['methodologie','faq','donnees','apropos','contact']) ? 'class="active"' : '' ?>>À propos</a>
         <div class="nav-dropdown-menu">
@@ -63,7 +63,7 @@ function navClass(string $key, string $active, string $extra = ''): string {
     <a href="<?= $navRoot ?>index.php" <?= navClass('accueil', $navActive) ?>>Accueil</a>
     <a href="<?= $navRoot ?>estimation.php" <?= navClass('estimer', $navActive, 'mob-cta') ?>>Estimer un bien</a>
     <a href="<?= $navRoot ?>prix-m2.php" <?= navClass('prix', $navActive) ?>>Prix au m²</a>
-    <a <?= navClass('ventes', $navActive, 'disabled') ?> title="Bientôt disponible">Dernières ventes</a>
+    <a href="<?= $navRoot ?>ventes.php" <?= navClass('ventes', $navActive) ?>>Dernières ventes</a>
     <span class="mob-sep">À propos</span>
     <a href="<?= $navRoot ?>methodologie.php" <?= navClass('methodologie', $navActive) ?>>Méthodologie</a>
     <a href="<?= $navRoot ?>donnees.php"      <?= navClass('donnees',      $navActive) ?>>Données utilisées</a>

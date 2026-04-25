@@ -28,6 +28,7 @@ Utilisateur → index.php → estimation.php → results.php
 | `estimation.php` | `/estimation` | Formulaire de saisie d'adresse (autocomplete) |
 | `results.php` | `/results` | Résultats : surface estimée, prix m², mutations similaires |
 | `prix-m2.php` | `/prix-m2` | Prix au m² — grandes villes (arrondissements) ou France (département → ville → rue) |
+| `ventes.php` | `/ventes` | Dernières ventes DVF — scroll infini, filtres type / département / pièces / surface / période |
 | `donnees.php` | `/donnees` | Présentation des données sources (DVF) |
 | `methodologie.php` | `/methodologie` | Explication de la méthode de calcul |
 | `faq.php` | `/faq` | Questions fréquentes |
@@ -109,6 +110,29 @@ Prix au m² agrégé. Couvre France entière via 5 modes.
 Chaque entrée contient `{ p20, median, p80, mean, count }`.
 
 **Cache :** fichier `.cache/api/prix_m2_*.json`, TTL 6 mois (données DVF 2×/an). Invalider : `rm .cache/api/prix_m2_*.json`
+
+---
+
+### `api/ventes.php` — V1.0
+
+Dernières ventes DVF avec pagination keyset (scroll infini).
+
+**Paramètres GET :**
+- `cursor` *(optionnel)* — curseur de pagination `"YYYY-MM-DD_id"` (ex: `"2025-06-15_12345"`)
+- `limit` *(optionnel)* — résultats par page (défaut: 20, max: 40)
+- `type_local` *(optionnel)* — `"Appartement"`, `"Maison"`, etc.
+- `dep` *(optionnel)* — département `"33"` (complète le zéro automatiquement)
+- `code_commune` *(optionnel)* — code INSEE 5 chars (prioritaire sur cp et dep)
+- `cp` *(optionnel)* — code postal 5 chars
+- `annee_min` / `annee_max` *(optionnel)* — filtre période
+- `pieces` *(optionnel)* — nombre de pièces exactes
+- `surface_min` / `surface_max` *(optionnel)* — filtre surface (Carrez ou réelle)
+
+**Retourne :** `{ ok, ventes[], has_more, next_cursor }`
+
+Chaque vente : `{ id, date, adresse, commune, cp, valeur, surface, surf_src, prix_m2, type, pieces }`
+
+**Pagination :** `WHERE (date_mutation < :c_date OR (date_mutation = :c_date2 AND id < :c_id))` — aucun OFFSET, performant sur 13M lignes.
 
 ---
 

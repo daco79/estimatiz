@@ -119,8 +119,12 @@ $depts = [
     .range-fill{ position:absolute; top:0; height:100%; background:var(--c2); border-radius:3px; }
 
     .count-pill{ display:inline-block; background:#f3f4f6; color:#374151; font-size:12px; font-weight:600; padding:3px 8px; border-radius:20px; }
-    .expand-icon{ color:#9CA3AF; font-size:16px; transition:transform .2s; }
-    tr.expanded .expand-icon{ transform:rotate(180deg); color:var(--c1); }
+    .btn-rues{ display:inline-flex; align-items:center; gap:5px; padding:5px 11px; font-size:12px; font-weight:700; color:var(--c1); background:#eff6ff; border:1px solid #bfdbfe; border-radius:20px; white-space:nowrap; transition:background .15s,color .15s; }
+    tr:hover .btn-rues{ background:var(--c1); color:#fff; border-color:var(--c1); }
+    tr.expanded .btn-rues{ background:var(--c1); color:#fff; border-color:var(--c1); }
+    .btn-rues .arr{ transition:transform .2s; display:inline-block; }
+    tr.expanded .btn-rues .arr{ transform:rotate(180deg); }
+    .tbl-hint{ font-size:12px; color:#6B7280; margin-bottom:10px; }
 
     /* ── Drill rues ── */
     .drill-row td{ padding:0 !important; background:#f0f7ff; border-bottom:1px solid #bfdbfe !important; }
@@ -245,6 +249,7 @@ $depts = [
       <div class="sum-card"><div class="sum-val" id="sumCount">—</div><div class="sum-lbl">Ventes analysées</div></div>
     </div>
 
+    <p class="tbl-hint" id="tblHint" style="display:none;">Cliquez sur une ligne pour voir le détail par rue.</p>
     <div class="tbl-wrap" id="tblWrap" style="display:none;">
       <table>
         <thead id="tblHead"></thead>
@@ -317,6 +322,7 @@ function getCommonParams() {
 async function load() {
   showStatus('Chargement…', 'loading');
   document.getElementById('summaryBox').style.display = 'none';
+  document.getElementById('tblHint').style.display    = 'none';
   document.getElementById('tblWrap').style.display    = 'none';
   expandedKey = null;
 
@@ -488,14 +494,14 @@ function renderTable(tableMode) {
         <td><span class="prix-med">${fmtK(d.median)}</span></td>
         <td class="hide-mob">${rangeCell}</td>
         <td><span class="count-pill">${numFr(d.count)}</span></td>
-        <td><span class="expand-icon">⌄</span></td>`;
+        <td><span class="btn-rues">Rues <span class="arr">⌄</span></span></td>`;
     } else {
       tr.innerHTML = `
         <td style="font-weight:600;">${d.commune ?? '—'}</td>
         <td><span class="prix-med">${fmtK(d.median)}</span></td>
         <td class="hide-mob">${rangeCell}</td>
         <td><span class="count-pill">${numFr(d.count)}</span></td>
-        <td><span class="expand-icon">⌄</span></td>`;
+        <td><span class="btn-rues">Rues <span class="arr">⌄</span></span></td>`;
     }
 
     const drillData = isArr
@@ -510,6 +516,7 @@ function renderTable(tableMode) {
     }
   });
 
+  document.getElementById('tblHint').style.display = 'block';
   document.getElementById('tblWrap').style.display = 'block';
   updateSortHeaders();
 }

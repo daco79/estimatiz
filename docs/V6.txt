@@ -331,6 +331,11 @@ Résultat table dvf_voies : 2 360 085 lignes
 [x] Bug P20/P80 corrigé (front lisait p25/p75 inexistants)
 [x] Cache prix-m2 → 6 mois (fichier .cache/api/) — invalider après ré-import
 [x] Mise à jour site-wide : couverture France (index, donnees, a-propos, faq, methodologie)
+[x] Page "Dernières ventes" (ventes.php + api/ventes.php) — scroll infini, pagination keyset
+    - Curseur format : "YYYY-MM-DD_id" — évite LIMIT/OFFSET sur 13M lignes
+    - Filtres : type_local, département (101), pièces, surface min/max, période
+    - IntersectionObserver sur #sentinel (rootMargin: 200px)
+    - nav.php activé : lien Dernières ventes → ventes.php (desktop + mobile)
 [ ] Adapter api/export.php (actuellement non connecté à l'interface)
 [ ] Adapter api/estimate.php (actuellement orphelin, décider si à garder)
 [ ] Activer le filtre géographique (rayon autour d'une adresse) grâce à lat/lon
