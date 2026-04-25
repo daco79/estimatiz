@@ -33,6 +33,14 @@ $depts = [
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <!-- SEO meta tags -->
+  <meta name="description" content="Consultez l’évolution des prix au m² dans les grandes villes et départements de France grâce aux ventes officielles DVF 2014–2025. Filtrez par ville, département, type de bien et période."/>
+  <link rel="canonical" href="https://www.estimatiz.fr/prix-m2.php"/>
+  <meta property="og:locale" content="fr_FR"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:title" content="Prix au m² – Estimatiz"/>
+  <meta property="og:description" content="Consultez l’évolution des prix au m² dans les grandes villes et départements de France grâce aux ventes officielles DVF 2014–2025. Filtrez par ville, département, type de bien et période."/>
+  <meta property="og:url" content="https://www.estimatiz.fr/prix-m2.php"/>
   <title>Prix au m² – Estimatiz</title>
   <link rel="stylesheet" href="assets/css/site.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
