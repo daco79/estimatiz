@@ -7,8 +7,8 @@
  */
 
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'cpaneluser_nomdelabase');
-define('DB_USER', 'cpaneluser_utilisateur');
+define('DB_NAME', 'cpaneluser_DVF_France');   // nom préfixé cPanel (ex: zece2169_DVF_France)
+define('DB_USER', 'cpaneluser_utilisateur');   // ex: zece2169_estimatiz
 define('DB_PASSWORD', 'mot_de_passe_mysql');
 define('DB_CHARSET', 'utf8mb4');
-define('DB_TABLE_DVF', 'data_paris_I');
+define('DB_TABLE_DVF', 'dvf_france');

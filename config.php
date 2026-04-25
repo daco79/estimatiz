@@ -26,11 +26,11 @@ if ($isLocalHost && is_file($localConfig)) {
 }
 
 defined('DB_HOST')      || define('DB_HOST', getenv('ESTIMATIZ_DB_HOST') ?: 'localhost');
-defined('DB_NAME')      || define('DB_NAME', getenv('ESTIMATIZ_DB_NAME') ?: 'csv_db 6');
+defined('DB_NAME')      || define('DB_NAME', getenv('ESTIMATIZ_DB_NAME') ?: 'DVF_France');
 defined('DB_USER')      || define('DB_USER', getenv('ESTIMATIZ_DB_USER') ?: 'root');
 defined('DB_PASSWORD')  || define('DB_PASSWORD', getenv('ESTIMATIZ_DB_PASSWORD') ?: '');
 defined('DB_CHARSET')   || define('DB_CHARSET', getenv('ESTIMATIZ_DB_CHARSET') ?: 'utf8mb4');
-defined('DB_TABLE_DVF') || define('DB_TABLE_DVF', getenv('ESTIMATIZ_DB_TABLE_DVF') ?: 'data_paris_I');
+defined('DB_TABLE_DVF') || define('DB_TABLE_DVF', getenv('ESTIMATIZ_DB_TABLE_DVF') ?: 'dvf_france');
 
 // Alias conservé pour les anciens scripts éventuels.
 defined('DB_PASS') || define('DB_PASS', DB_PASSWORD);
