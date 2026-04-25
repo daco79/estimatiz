@@ -33,7 +33,21 @@ $depts = [
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Dernières ventes – Estimatiz</title>
+  <title>Dernières ventes immobilières – Estimatiz</title>
+  <meta name="description" content="Consultez les dernières ventes immobilières en France (DVF 2014–2025). Filtrez par type de bien, département, nombre de pièces et surface." />
+  <link rel="canonical" href="https://www.estimatiz.fr/ventes" />
+  <meta property="og:title" content="Dernières ventes immobilières – Estimatiz" />
+  <meta property="og:description" content="Consultez les dernières ventes immobilières en France (DVF 2014–2025). Filtrez par type de bien, département, nombre de pièces et surface." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.estimatiz.fr/ventes" />
+  <meta property="og:locale" content="fr_FR" />
+  <meta property="og:image" content="https://www.estimatiz.fr/assets/img/og-estimatiz.png" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+    {"@type":"ListItem","position":1,"name":"Accueil","item":"https://www.estimatiz.fr/"},
+    {"@type":"ListItem","position":2,"name":"Dernières ventes","item":"https://www.estimatiz.fr/ventes"}
+  ]}
+  </script>
   <link rel="stylesheet" href="assets/css/site.css"/>
   <style>
     :root{ --c1:#1E3A8A; --c2:#10B981; --c4:#F3F4F6; }

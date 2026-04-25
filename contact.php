@@ -7,13 +7,14 @@
   <title>Contact – Estimatiz</title>
   <!-- SEO enhancements -->
   <meta name="description" content="Contactez l'équipe Estimatiz pour signaler une adresse introuvable, une estimation incohérente, un bug ou une suggestion." />
-  <link rel="canonical" href="https://www.estimatiz.fr/contact.php" />
+  <link rel="canonical" href="https://www.estimatiz.fr/contact" />
   <!-- Open Graph tags -->
   <meta property="og:title" content="Contact – Estimatiz" />
   <meta property="og:description" content="Contactez l'équipe Estimatiz pour signaler une adresse introuvable, une estimation incohérente, un bug ou une suggestion." />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://www.estimatiz.fr/contact.php" />
+  <meta property="og:url" content="https://www.estimatiz.fr/contact" />
   <meta property="og:locale" content="fr_FR" />
+  <meta property="og:image" content="https://www.estimatiz.fr/assets/img/og-estimatiz.png" />
   <link rel="stylesheet" href="assets/css/site.css" />
   <?php include 'includes/content-style.php'; ?>
 </head>

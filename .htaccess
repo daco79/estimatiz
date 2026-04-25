@@ -24,7 +24,19 @@ DirectoryIndex index.php index.html
 
 RedirectMatch 403 ^/\.cache(/|$)
 
-# Compatibilité avec les anciennes URLs .html
 RewriteEngine On
+
+# 301 : anciennes URLs .html → sans extension
 RewriteCond %{THE_REQUEST} \s/+(.+?)\.html[\s?] [NC]
-RewriteRule ^(.+)\.html$ $1.php [R=301,L]
+RewriteRule ^ /%1 [R=301,L]
+
+# 301 : URLs .php (pages publiques) → sans extension
+# Exclut /api/, les configs et les fichiers système
+RewriteCond %{THE_REQUEST} \s/+((?!api/)[^?\s]+?)\.php[\s?] [NC]
+RewriteRule ^ /%1 [R=301,L]
+
+# Rewrite interne : URL propre → fichier .php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^([^.]+)$ $1.php [L]

@@ -7,13 +7,20 @@
   <title>Méthodologie – Estimatiz</title>
   <!-- SEO enhancements -->
   <meta name="description" content="Apprenez la méthodologie d’Estimatiz : sources des données DVF, recherche des comparables, filtrage statistique, calcul des estimations et limites." />
-  <link rel="canonical" href="https://www.estimatiz.fr/methodologie.php" />
+  <link rel="canonical" href="https://www.estimatiz.fr/methodologie" />
   <!-- Open Graph tags -->
   <meta property="og:title" content="Méthodologie – Estimatiz" />
   <meta property="og:description" content="Apprenez la méthodologie d’Estimatiz : sources des données DVF, recherche des comparables, filtrage statistique, calcul des estimations et limites." />
   <meta property="og:type" content="article" />
-  <meta property="og:url" content="https://www.estimatiz.fr/methodologie.php" />
+  <meta property="og:url" content="https://www.estimatiz.fr/methodologie" />
   <meta property="og:locale" content="fr_FR" />
+  <meta property="og:image" content="https://www.estimatiz.fr/assets/img/og-estimatiz.png" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+    {"@type":"ListItem","position":1,"name":"Accueil","item":"https://www.estimatiz.fr/"},
+    {"@type":"ListItem","position":2,"name":"Méthodologie","item":"https://www.estimatiz.fr/methodologie"}
+  ]}
+  </script>
   <link rel="stylesheet" href="assets/css/site.css" />
   <?php include 'includes/content-style.php'; ?>
 </head>

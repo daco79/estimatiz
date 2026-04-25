@@ -7,13 +7,14 @@
   <title>À propos – Estimatiz</title>
   <!-- SEO enhancements -->
   <meta name="description" content="Découvrez qui se cache derrière Estimatiz, ses valeurs et sa mission. Un outil transparent pour rendre l’estimation immobilière accessible à tous." />
-  <link rel="canonical" href="https://www.estimatiz.fr/a-propos.php" />
+  <link rel="canonical" href="https://www.estimatiz.fr/a-propos" />
   <!-- Open Graph tags -->
   <meta property="og:title" content="À propos – Estimatiz" />
   <meta property="og:description" content="Découvrez qui se cache derrière Estimatiz, ses valeurs et sa mission. Un outil transparent pour rendre l’estimation immobilière accessible à tous." />
   <meta property="og:type" content="article" />
-  <meta property="og:url" content="https://www.estimatiz.fr/a-propos.php" />
+  <meta property="og:url" content="https://www.estimatiz.fr/a-propos" />
   <meta property="og:locale" content="fr_FR" />
+  <meta property="og:image" content="https://www.estimatiz.fr/assets/img/og-estimatiz.png" />
   <link rel="stylesheet" href="assets/css/site.css" />
   <?php include 'includes/content-style.php'; ?>
 </head>
@@ -78,7 +79,7 @@
     <div class="c-section">
       <h2>Contact & retours</h2>
       <p>Estimatiz est un projet en constante évolution. Vos retours sont précieux : adresse introuvable, estimation qui semble incohérente, fonctionnalité souhaitée — tout est utile.</p>
-      <p><a href="contact.php">→ Nous contacter</a></p>
+      <p><a href="contact">→ Nous contacter</a></p>
     </div>
 
   </div>

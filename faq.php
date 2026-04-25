@@ -7,13 +7,57 @@
   <title>FAQ – Estimatiz</title>
   <!-- SEO enhancements -->
   <meta name="description" content="Questions fréquentes sur Estimatiz : recherche d'adresse, méthode d’estimation, indice de confiance et limites." />
-  <link rel="canonical" href="https://www.estimatiz.fr/faq.php" />
+  <link rel="canonical" href="https://www.estimatiz.fr/faq" />
   <!-- Open Graph tags -->
   <meta property="og:title" content="FAQ – Estimatiz" />
   <meta property="og:description" content="Questions fréquentes sur Estimatiz : recherche d'adresse, méthode d’estimation, indice de confiance et limites." />
   <meta property="og:type" content="article" />
-  <meta property="og:url" content="https://www.estimatiz.fr/faq.php" />
+  <meta property="og:url" content="https://www.estimatiz.fr/faq" />
   <meta property="og:locale" content="fr_FR" />
+  <meta property="og:image" content="https://www.estimatiz.fr/assets/img/og-estimatiz.png" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Pourquoi mon adresse n'est-elle pas trouvée ?",
+        "acceptedAnswer": { "@type": "Answer", "text": "L'autocomplétion est fondée sur les adresses présentes dans la base DVF. Si une adresse n'apparaît pas, c'est qu'aucune vente n'a été enregistrée à cette adresse précise depuis 2014. Essayez de saisir uniquement le nom de la rue et la ville (sans numéro)." }
+      },
+      {
+        "@type": "Question",
+        "name": "Quelle est la différence entre une adresse précise et le nom de rue seul ?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Adresse précise (numéro + rue) : les ventes retenues sont celles au plus proche de votre numéro. Nom de rue seul : toutes les ventes de la rue sont utilisées, l'échantillon est plus large et l'estimation plus robuste statistiquement." }
+      },
+      {
+        "@type": "Question",
+        "name": "Pourquoi l'estimation est-elle une fourchette et non un prix unique ?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Le marché immobilier n'est pas homogène. Estimatiz propose trois valeurs : une estimation basse (P20), une valeur médiane (P50) et une estimation haute (P80). Ces percentiles reflètent la réalité du marché." }
+      },
+      {
+        "@type": "Question",
+        "name": "Qu'est-ce que l'indice de confiance ?",
+        "acceptedAnswer": { "@type": "Answer", "text": "L'indice de confiance mesure la fiabilité statistique de l'estimation. Il tient compte du nombre de ventes comparables trouvées et de la dispersion des prix. Un indice inférieur à 40 % indique un échantillon réduit ou un marché très hétérogène." }
+      },
+      {
+        "@type": "Question",
+        "name": "Les données sont-elles officielles ?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Oui. Les données DVF sont publiées par la Direction Générale des Finances Publiques (DGFiP) sur data.gouv.fr. Elles sont issues des actes notariés transmis à l'administration fiscale lors de chaque vente." }
+      },
+      {
+        "@type": "Question",
+        "name": "Estimatiz remplace-t-il une expertise immobilière professionnelle ?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Non. Estimatiz est un outil d'aide à la décision fondé sur des données statistiques. Il ne tient pas compte de l'état du bien, des travaux, de l'étage ou de l'exposition. Pour une vente ou un achat important, une expertise professionnelle reste indispensable." }
+      },
+      {
+        "@type": "Question",
+        "name": "Puis-je utiliser Estimatiz pour une démarche fiscale ou juridique ?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Les estimations produites par Estimatiz sont des indicateurs statistiques et ne constituent pas une expertise immobilière certifiée. Elles ne peuvent pas être utilisées comme pièce justificative dans une procédure fiscale, successorale ou juridique." }
+      }
+    ]
+  }
+  </script>
   <link rel="stylesheet" href="assets/css/site.css" />
   <?php include 'includes/content-style.php'; ?>
 </head>
@@ -142,7 +186,7 @@
 
     <div class="c-section">
       <h2>Vous n'avez pas trouvé votre réponse ?</h2>
-      <p>Contactez-nous via la <a href="contact.php">page Contact</a>. Nous répondons dans les meilleurs délais.</p>
+      <p>Contactez-nous via la <a href="contact">page Contact</a>. Nous répondons dans les meilleurs délais.</p>
     </div>
 
   </div>

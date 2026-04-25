@@ -7,13 +7,20 @@
   <title>Estimatiz – Estimer un bien</title>
   <!-- SEO enhancements -->
   <meta name="description" content="Estimez votre bien immobilier en quelques clics en utilisant les ventes réelles et les données DVF. Ajustez la surface et les critères pour obtenir une estimation personnalisée." />
-  <link rel="canonical" href="https://www.estimatiz.fr/estimation.php" />
+  <link rel="canonical" href="https://www.estimatiz.fr/estimation" />
   <!-- Open Graph tags -->
   <meta property="og:title" content="Estimatiz – Estimer un bien" />
   <meta property="og:description" content="Estimez votre bien immobilier en quelques clics en utilisant les ventes réelles et les données DVF. Ajustez la surface et les critères pour obtenir une estimation personnalisée." />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://www.estimatiz.fr/estimation.php" />
+  <meta property="og:url" content="https://www.estimatiz.fr/estimation" />
   <meta property="og:locale" content="fr_FR" />
+  <meta property="og:image" content="https://www.estimatiz.fr/assets/img/og-estimatiz.png" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+    {"@type":"ListItem","position":1,"name":"Accueil","item":"https://www.estimatiz.fr/"},
+    {"@type":"ListItem","position":2,"name":"Estimer un bien","item":"https://www.estimatiz.fr/estimation"}
+  ]}
+  </script>
   <link rel="stylesheet" href="assets/css/site.css" />
   <style>
     :root{ --c1:#1E3A8A; --c2:#10B981; --c3:#111827; --c4:#E5E7EB; }
@@ -117,7 +124,7 @@
   <!-- Bandeau adresse -->
   <div class="addr-bar">
     <span class="addr-bar-label">📍 <span id="addrBarLabel">Chargement…</span></span>
-    <a class="nav-back" href="index.php">&#8592; Changer d'adresse</a>
+    <a class="nav-back" href="index.php">&#8592; Accueil</a>
   </div>
 
   <div class="wrap">
@@ -215,7 +222,7 @@
           type_voie: selected.type_voie || '', voie: selected.voie || '',
           no_voie: selected.no_voie || '', btq: selected.btq || '', section: selected.section || ''
         });
-        window.location.href = 'estimation.php?' + p;
+        window.location.href = 'estimation?' + p;
       });
     })();
 
@@ -323,7 +330,7 @@
           label: suggestion.label, surface, surfaceMin, surfaceMax, pieces, mutData, suggestion,
         }));
         showStatus(`${rows.length} résultat${rows.length > 1 ? 's' : ''} trouvé${rows.length > 1 ? 's' : ''}. Ouverture…`, 'success');
-        window.location.href = 'results.php';
+        window.location.href = 'results';
       });
       /* ── Restauration si retour depuis results.php ── */
       const _saved = sessionStorage.getItem('estimatiz_results');

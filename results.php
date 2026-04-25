@@ -7,13 +7,14 @@
   <title>Estimatiz – Résultats</title>
   <!-- SEO enhancements -->
   <meta name="description" content="Résultats d’estimation personnalisée du prix d’un bien immobilier selon les ventes DVF. Consultez les valeurs basse, médiane et haute, et les statistiques comparables." />
-  <link rel="canonical" href="https://www.estimatiz.fr/results.php" />
+  <link rel="canonical" href="https://www.estimatiz.fr/results" />
   <!-- Open Graph tags -->
   <meta property="og:title" content="Estimatiz – Résultats" />
   <meta property="og:description" content="Résultats d’estimation personnalisée du prix d’un bien immobilier selon les ventes DVF. Consultez les valeurs basse, médiane et haute, et les statistiques comparables." />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://www.estimatiz.fr/results.php" />
+  <meta property="og:url" content="https://www.estimatiz.fr/results" />
   <meta property="og:locale" content="fr_FR" />
+  <meta property="og:image" content="https://www.estimatiz.fr/assets/img/og-estimatiz.png" />
   <link rel="stylesheet" href="assets/css/site.css" />
   <style>
     :root{ --c1:#1E3A8A; --c2:#10B981; --c3:#111827; --c4:#E5E7EB; }
@@ -164,7 +165,7 @@
   </div>
   <div class="page-hdr">
     <div>
-      <a class="btn-back" id="btnBack" href="index.php">&#8592; Modifier l'estimation</a>
+      <a class="btn-back" id="btnBack" href="estimation">&#8592; Modifier l'estimation</a>
       <h1 id="pageTitle" style="margin-top:10px">Résultats</h1>
       <div class="sub" id="pageSub"></div>
     </div>
@@ -247,7 +248,7 @@
   document.getElementById('pageSub').textContent = subParts.join('  ·  ');
   /* ---- Entête et pied de page impression ---- */
   const dateStr  = new Date().toLocaleDateString('fr-FR', { year:'numeric', month:'long', day:'2-digit' });
-  const siteUrl  = window.location.origin + window.location.pathname.replace('results.php', '');
+  const siteUrl  = window.location.origin + window.location.pathname.replace('results', '');
   document.getElementById('printDateLabel').textContent = dateStr;
   document.getElementById('printUrl').textContent       = siteUrl;
   document.getElementById('printTitle').textContent     = label;

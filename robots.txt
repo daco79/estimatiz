@@ -1,5 +1,9 @@
-
 User-agent: *
 Disallow: /api/
+Disallow: /_Base/
+Disallow: /_Backup/
+Disallow: /.cache/
+Disallow: /lib/
+Disallow: /includes/
 Allow: /
 Sitemap: https://www.estimatiz.fr/sitemap.xml

@@ -14,6 +14,25 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.estimatiz.fr/" />
   <meta property="og:locale" content="fr_FR" />
+  <meta property="og:image" content="https://www.estimatiz.fr/assets/img/og-estimatiz.png" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Estimatiz",
+    "url": "https://www.estimatiz.fr/",
+    "description": "Outil d'estimation immobilière gratuit basé sur les ventes réelles DVF — France entière 2014–2025.",
+    "inLanguage": "fr-FR",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://www.estimatiz.fr/estimation?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
   <link rel="stylesheet" href="assets/css/site.css" />
   <style>
     :root{ --c1:#1E3A8A; --c2:#10B981; --c3:#111827; --c4:#F3F4F6; }
@@ -146,14 +165,14 @@
     <p class="section-sub">Des outils fondés sur les données DVF de la Direction Générale des Finances Publiques.</p>
     <div class="features">
 
-      <a class="feat-card clickable" href="estimation.php">
+      <a class="feat-card clickable" href="estimation">
         <div class="feat-icon">🏠</div>
         <div class="feat-title">Estimer un bien</div>
         <p class="feat-desc">Obtenez une fourchette basse / médiane / haute basée sur les ventes réelles autour de votre adresse.</p>
         <span class="feat-badge">Disponible</span>
       </a>
 
-      <a class="feat-card clickable" href="prix-m2.php">
+      <a class="feat-card clickable" href="prix-m2">
         <div class="feat-icon">📊</div>
         <div class="feat-title">Prix au m²</div>
         <p class="feat-desc">Consultez les prix moyens et médians par arrondissement, quartier ou rue, avec filtres par période.</p>

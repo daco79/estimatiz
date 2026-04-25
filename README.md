@@ -11,11 +11,11 @@ Couverture : France entière, 2014 → 2025 (13 millions de transactions).
 L'utilisateur saisit une adresse sur la page d'accueil. L'autocomplete suggère des rues en temps réel depuis la base `dvf_voies`. Une fois la rue sélectionnée, l'application cherche les ventes comparables sur la même rue et calcule un prix au m² statistique (p20 / médiane / p80). L'estimation finale est affichée avec les mutations de référence.
 
 ```
-Utilisateur → index.php → estimation.php → results.php
-                              ↑                  ↑
-                         api/autocomplete    api/surface
-                                            api/mutations
-                                            api/prix-m2
+Utilisateur → /  →  /estimation  →  /results
+                         ↑               ↑
+                   api/autocomplete   api/surface
+                                      api/mutations
+                                      api/prix-m2
 ```
 
 ---
@@ -247,6 +247,26 @@ python3 build_dvf_voies.py
 
 ---
 
+## SEO — V7
+
+### URL rewriting (`.htaccess`)
+- **301** : toute URL `.php` publique → URL propre sans extension (`/estimation.php` → `/estimation`)
+- **Rewrite interne** : Apache sert `estimation.php` quand le navigateur demande `/estimation`
+- Les APIs (`/api/`) ne sont pas concernées (appelées en JS)
+
+### Meta et structured data
+- `<link rel="canonical">` sans `.php` sur toutes les pages
+- `og:url` et `og:image` sur toutes les pages (`/assets/img/og-estimatiz.png` — 1200×630px)
+- **JSON-LD `WebSite`** + `SearchAction` sur `index.php`
+- **JSON-LD `FAQPage`** sur `faq.php` (rich results Google)
+- **JSON-LD `BreadcrumbList`** sur `estimation`, `prix-m2`, `ventes`, `methodologie`, `donnees`
+
+### Sitemap et robots
+- `sitemap.xml` : 9 URLs propres + `<priority>` + `<changefreq>`
+- `robots.txt` : bloque `/_Base/`, `/_Backup/`, `/.cache/`, `/lib/`, `/includes/`
+
+---
+
 ## Notes techniques
 
 - **Format `adresse_nom_voie`** : type et nom fusionnés, ex `"RUE DE RIVOLI"`, `"AV FOCH"`. Pas de colonne type_voie séparée.
@@ -254,3 +274,5 @@ python3 build_dvf_voies.py
 - **`id_parcelle`** : 14 chars. `section = SUBSTRING(id_parcelle, 9, 2)`.
 - **innodb_buffer_pool_size** : XAMPP démarre à 16 MB. Les scripts `build_dvf_voies.py` et `import_dvf_france_automatique.py` le montent temporairement à 512 MB pour les opérations massives.
 - **Cache API** : préfixe `acV7_` pour l'autocomplete, `pm2v4_` pour prix-m2 (TTL 6 mois, fichiers dans `.cache/api/`).
+- **og:image** : `assets/img/og-estimatiz.png` (1200×630px, 48 Ko) — générée avec Pillow depuis `_Base/`.
+- **o2switch** : import via SSH (`mysql -u user -p base < dump.sql`) pour éviter les timeouts phpMyAdmin. `build_dvf_voies.sql` disponible pour reconstruire `dvf_voies` directement en SQL.

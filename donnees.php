@@ -7,13 +7,20 @@
   <title>Données utilisées – Estimatiz</title>
   <!-- SEO enhancements -->
   <meta name="description" content="Découvrez les données DVF utilisées par Estimatiz, leur composition, leur couverture et la façon dont elles sont traitées et mises à jour." />
-  <link rel="canonical" href="https://www.estimatiz.fr/donnees.php" />
+  <link rel="canonical" href="https://www.estimatiz.fr/donnees" />
   <!-- Open Graph tags -->
   <meta property="og:title" content="Données utilisées – Estimatiz" />
   <meta property="og:description" content="Découvrez les données DVF utilisées par Estimatiz, leur composition, leur couverture et la façon dont elles sont traitées et mises à jour." />
   <meta property="og:type" content="article" />
-  <meta property="og:url" content="https://www.estimatiz.fr/donnees.php" />
+  <meta property="og:url" content="https://www.estimatiz.fr/donnees" />
   <meta property="og:locale" content="fr_FR" />
+  <meta property="og:image" content="https://www.estimatiz.fr/assets/img/og-estimatiz.png" />
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+    {"@type":"ListItem","position":1,"name":"Accueil","item":"https://www.estimatiz.fr/"},
+    {"@type":"ListItem","position":2,"name":"Données utilisées","item":"https://www.estimatiz.fr/donnees"}
+  ]}
+  </script>
   <link rel="stylesheet" href="assets/css/site.css" />
   <?php include 'includes/content-style.php'; ?>
 </head>
