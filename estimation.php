@@ -124,7 +124,7 @@
   <!-- Bandeau adresse -->
   <div class="addr-bar">
     <span class="addr-bar-label">📍 <span id="addrBarLabel">Chargement…</span></span>
-    <a class="nav-back" href="index.php">&#8592; Accueil</a>
+    <a class="nav-back" href=".">&#8592; Accueil</a>
   </div>
 
   <div class="wrap">

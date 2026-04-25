@@ -127,14 +127,14 @@
         <li>Les données DVF ont un délai de publication de plusieurs mois.</li>
         <li>Les biens atypiques (lofts, hôtels particuliers, rez-de-jardin…) peuvent être mal représentés.</li>
         <li>Les ventes entre proches (donations, successions) peuvent biaiser les prix.</li>
-        <li>La couverture actuelle est limitée à <strong>Paris intramuros (75)</strong>.</li>
+        <li>Les zones à très faible densité de transactions (communes rurales isolées) peuvent donner des estimations moins fiables.</li>
       </ul>
     </div>
 
   </div>
 
   <footer>
-    Estimatiz — Données <a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/" target="_blank" rel="noopener">DVF · data.gouv.fr</a> &nbsp;|&nbsp; Paris 2014–2025
+    Estimatiz — Données <a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/" target="_blank" rel="noopener">DVF · data.gouv.fr</a> &nbsp;|&nbsp; France 2014–2025
   </footer>
 
 </body>

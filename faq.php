@@ -167,10 +167,10 @@
         </details>
 
         <details class="faq-item">
-          <summary>Pourquoi la couverture est-elle limitée à Paris ?</summary>
+          <summary>Quelles zones géographiques sont couvertes ?</summary>
           <div class="faq-answer">
-            <p>Estimatiz est un projet en cours de développement. Paris a été choisie comme première zone en raison du volume important de transactions disponibles et de la densité du marché immobilier.</p>
-            <p>L'extension à d'autres villes (petite couronne, Lyon, Marseille, Bordeaux…) est prévue dans les prochaines versions.</p>
+            <p>Estimatiz couvre la <strong>France entière</strong> : métropole et DOM (Guadeloupe, Martinique, Guyane, La Réunion, Mayotte). Les données DVF représentent <strong>13 millions de transactions</strong> de 2014 à 2025, réparties sur 101 départements.</p>
+            <p>Seules les zones à très faible densité de transactions (communes rurales isolées) peuvent donner des estimations moins fiables, faute de comparables suffisants.</p>
           </div>
         </details>
 
@@ -192,7 +192,7 @@
   </div>
 
   <footer>
-    Estimatiz — Données <a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/" target="_blank" rel="noopener">DVF · data.gouv.fr</a> &nbsp;|&nbsp; Paris 2014–2025
+    Estimatiz — Données <a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/" target="_blank" rel="noopener">DVF · data.gouv.fr</a> &nbsp;|&nbsp; France 2014–2025
   </footer>
 
 </body>

@@ -17,7 +17,7 @@ function navClass(string $key, string $active, string $extra = ''): string {
   <div class="sitenav-inner">
 
     <!-- Logo -->
-    <a class="sitenav-logo" href="<?= $navRoot ?>index.php" title="Estimatiz — Accueil">
+    <a class="sitenav-logo" href="<?= $navRoot ?>." title="Estimatiz — Accueil">
       <svg class="sitenav-logo-icon" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
         <path d="M60 10 L20 46 V110 H100 V46 Z" fill="none" stroke="#1E3A8A" stroke-width="7" stroke-linejoin="round"/>
         <rect x="52" y="68" width="16" height="42" fill="#10B981" rx="3"/>
@@ -34,7 +34,7 @@ function navClass(string $key, string $active, string $extra = ''): string {
 
     <!-- Liens desktop -->
     <ul class="sitenav-links" role="list">
-      <li><a href="<?= $navRoot ?>index.php" <?= navClass('accueil', $navActive) ?>>Accueil</a></li>
+      <li><a href="<?= $navRoot ?>." <?= navClass('accueil', $navActive) ?>>Accueil</a></li>
       <li><a href="<?= $navRoot ?>estimation" <?= navClass('estimer', $navActive, 'sitenav-cta') ?>>Estimer un bien</a></li>
       <li><a href="<?= $navRoot ?>prix-m2" <?= navClass('prix', $navActive) ?>>Prix au m²</a></li>
       <li><a href="<?= $navRoot ?>ventes" <?= navClass('ventes', $navActive) ?>>Dernières ventes</a></li>
@@ -60,7 +60,7 @@ function navClass(string $key, string $active, string $extra = ''): string {
 
   <!-- Menu mobile -->
   <div class="sitenav-mobile" id="navMobile">
-    <a href="<?= $navRoot ?>index.php" <?= navClass('accueil', $navActive) ?>>Accueil</a>
+    <a href="<?= $navRoot ?>." <?= navClass('accueil', $navActive) ?>>Accueil</a>
     <a href="<?= $navRoot ?>estimation" <?= navClass('estimer', $navActive, 'mob-cta') ?>>Estimer un bien</a>
     <a href="<?= $navRoot ?>prix-m2" <?= navClass('prix', $navActive) ?>>Prix au m²</a>
     <a href="<?= $navRoot ?>ventes" <?= navClass('ventes', $navActive) ?>>Dernières ventes</a>

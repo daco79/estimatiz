@@ -152,9 +152,9 @@
   <!-- Stats -->
   <div class="stats-bar">
     <div class="stats-inner">
-      <div><div class="stat-val">423 000</div><div class="stat-lbl">ventes analysées</div></div>
+      <div><div class="stat-val">13 millions</div><div class="stat-lbl">transactions analysées</div></div>
       <div><div class="stat-val">2014–2025</div><div class="stat-lbl">données DVF couvertes</div></div>
-      <div><div class="stat-val">20</div><div class="stat-lbl">arrondissements parisiens</div></div>
+      <div><div class="stat-val">101</div><div class="stat-lbl">départements couverts</div></div>
       <div><div class="stat-val">100%</div><div class="stat-lbl">données officielles</div></div>
     </div>
   </div>
@@ -179,12 +179,12 @@
         <span class="feat-badge">Disponible</span>
       </a>
 
-      <div class="feat-card soon">
+      <a class="feat-card clickable" href="ventes">
         <div class="feat-icon">📋</div>
         <div class="feat-title">Dernières ventes</div>
         <p class="feat-desc">Parcourez les transactions récentes autour d'une adresse : prix, surface, date et type de bien.</p>
-        <span class="feat-badge soon">Bientôt disponible</span>
-      </div>
+        <span class="feat-badge">Disponible</span>
+      </a>
 
     </div>
   </section>
@@ -216,7 +216,7 @@
 
   <!-- Footer -->
   <footer>
-    Estimatiz — Données <a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/" target="_blank" rel="noopener">DVF · data.gouv.fr</a> &nbsp;|&nbsp; Paris 2014–2025
+    Estimatiz — Données <a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/" target="_blank" rel="noopener">DVF · data.gouv.fr</a> &nbsp;|&nbsp; France 2014–2025
   </footer>
 
   <script src="assets/js/utils.js"></script>
@@ -243,7 +243,7 @@
     }
 
     function buildEstimationUrl(s) {
-      return 'estimation.php?' + new URLSearchParams({
+      return 'estimation?' + new URLSearchParams({
         label:     s.label     || '',
         code_voie: s.code_voie || '',
         commune:   s.commune   || '',
