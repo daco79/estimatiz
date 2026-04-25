@@ -27,7 +27,7 @@ Utilisateur → index.php → estimation.php → results.php
 | `index.php` | `/` | Page d'accueil — présentation et lien vers estimation |
 | `estimation.php` | `/estimation` | Formulaire de saisie d'adresse (autocomplete) |
 | `results.php` | `/results` | Résultats : surface estimée, prix m², mutations similaires |
-| `prix-m2.php` | `/prix-m2` | Carte/tableau des prix au m² par commune ou par rue |
+| `prix-m2.php` | `/prix-m2` | Prix au m² — grandes villes (arrondissements) ou France (département → ville → rue) |
 | `donnees.php` | `/donnees` | Présentation des données sources (DVF) |
 | `methodologie.php` | `/methodologie` | Explication de la méthode de calcul |
 | `faq.php` | `/faq` | Questions fréquentes |
@@ -89,16 +89,26 @@ Liste les mutations (ventes) comparables sur une rue.
 
 ---
 
-### `api/prix-m2.php` — V3.0
+### `api/prix-m2.php` — V4.0
 
-Prix au m² agrégé par arrondissement ou par rue.
+Prix au m² agrégé. Couvre France entière via 5 modes.
 
-**Paramètres GET :**
-- `commune` — filtre commune
-- `voie` *(optionnel)* — filtre rue (mode rue)
-- `annee` *(optionnel)* — filtre année
+**Modes (`?mode=`) :**
+| Mode | Description | Paramètres clés |
+|---|---|---|
+| `arrondissements` *(défaut)* | Paris / Lyon / Marseille | `ville=paris\|lyon\|marseille` |
+| `departements` | Liste tous les départements disponibles | — |
+| `villes` | Villes d'un département | `dep=33` |
+| `rues` | Rues d'un CP ou d'une commune | `cp=75008` ou `code_commune=33063` |
+| `evolution` | Évolution annuelle du prix médian | `ville=`, `dep=`, `code_commune=` ou `cp=` |
 
-**Retourne :** `{ ok, stats: { p20, p50, p80, count }, rows[] }`
+**Filtres communs :** `type_local`, `pieces`, `annee_min`, `annee_max`
+
+**Retourne :** selon le mode — `data[]`, `villes[]`, `rues[]`, `evolution[]`, `departements[]`
+
+Chaque entrée contient `{ p20, median, p80, mean, count }`.
+
+**Cache :** fichier `.cache/api/prix_m2_*.json`, TTL 6 mois (données DVF 2×/an). Invalider : `rm .cache/api/prix_m2_*.json`
 
 ---
 
@@ -219,4 +229,4 @@ python3 build_dvf_voies.py
 - **`code_commune`** : INSEE 5 chars. Paris 1er = `75101` … 20e = `75120`.
 - **`id_parcelle`** : 14 chars. `section = SUBSTRING(id_parcelle, 9, 2)`.
 - **innodb_buffer_pool_size** : XAMPP démarre à 16 MB. Les scripts `build_dvf_voies.py` et `import_dvf_france_automatique.py` le montent temporairement à 512 MB pour les opérations massives.
-- **Cache API** : préfixe `acV7_` pour l'autocomplete, `pm2v6_` pour prix-m2.
+- **Cache API** : préfixe `acV7_` pour l'autocomplete, `pm2v4_` pour prix-m2 (TTL 6 mois, fichiers dans `.cache/api/`).

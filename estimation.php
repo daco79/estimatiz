@@ -98,7 +98,7 @@
     <h1>Estimer votre bien immobilier</h1>
     <div class="search-card">
       <div class="srch-box">
-        <input id="srchInput" type="text" placeholder="Ex : 12 rue de Rivoli, Paris" autocomplete="off" />
+        <input id="srchInput" type="text" placeholder="Ex : 12 rue de Rivoli, Paris  ou  cours Victor Hugo, Bordeaux" autocomplete="off" />
         <div id="srchSuggestions" class="srch-suggestions"></div>
         <button type="button" id="srchBtn" disabled>Estimer cette adresse &rarr;</button>
       </div>

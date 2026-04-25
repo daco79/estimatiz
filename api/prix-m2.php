@@ -64,7 +64,7 @@ function fail(string $message, int $code = 400): void {
 }
 
 function send_json_string(string $out, int $cacheTtl, string $cacheStatus = 'miss'): void {
-    header('Cache-Control: public, max-age=' . $cacheTtl);
+    header('Cache-Control: public, max-age=' . min($cacheTtl, 86400)); // HTTP max 1 jour
     header('X-Estimatiz-Cache: ' . $cacheStatus);
     echo $out;
     exit;
@@ -228,7 +228,7 @@ if ($annee_max < $annee_min) {
 
 // ── Cache ────────────────────────────────────────────────────────────────────
 
-$cacheTtl = 21600;
+$cacheTtl = 15552000; // 6 mois — données DVF mises à jour 2×/an
 
 $cacheKey = 'pm2v4_' . md5(json_encode([
     'mode'         => $mode,

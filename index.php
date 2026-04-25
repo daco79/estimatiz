@@ -98,7 +98,7 @@
     <p>Fondé sur les ventes officielles DVF — des données publiques, objectives et vérifiables. Pas d'estimation à l'aveugle.</p>
     <div class="search-card">
       <div class="searchBox">
-        <input id="addressInput" type="text" placeholder="Ex : 12 rue de Rivoli, Paris  ou  rue de Rivoli, Paris" autocomplete="off" />
+        <input id="addressInput" type="text" placeholder="Ex : 12 rue de Rivoli, Paris  ou  cours Victor Hugo, Bordeaux" autocomplete="off" />
         <div id="suggestions" class="suggestions"></div>
         <button type="button" id="btnContinuer" disabled>Estimer cette adresse &rarr;</button>
       </div>
@@ -112,7 +112,7 @@
         <div class="tip">
           <strong>🏘️ Rue entière</strong>
           Nom de rue + ville (sans numéro)<br>
-          <span class="ex">rue de Rivoli, Paris</span><br>
+          <span class="ex">cours Victor Hugo, Bordeaux</span><br>
           → échantillon plus large, plus de références
         </div>
       </div>
@@ -124,9 +124,9 @@
   <!-- Stats -->
   <div class="stats-bar">
     <div class="stats-inner">
-      <div><div class="stat-val">423 000</div><div class="stat-lbl">ventes analysées</div></div>
+      <div><div class="stat-val">13 millions</div><div class="stat-lbl">ventes analysées</div></div>
       <div><div class="stat-val">2014–2025</div><div class="stat-lbl">données DVF couvertes</div></div>
-      <div><div class="stat-val">20</div><div class="stat-lbl">arrondissements parisiens</div></div>
+      <div><div class="stat-val">France</div><div class="stat-lbl">couverture nationale</div></div>
       <div><div class="stat-val">100%</div><div class="stat-lbl">données officielles</div></div>
     </div>
   </div>
@@ -188,7 +188,7 @@
 
   <!-- Footer -->
   <footer>
-    Estimatiz — Données <a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/" target="_blank" rel="noopener">DVF · data.gouv.fr</a> &nbsp;|&nbsp; Paris 2014–2025
+    Estimatiz — Données <a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/" target="_blank" rel="noopener">DVF · data.gouv.fr</a> &nbsp;|&nbsp; France 2014–2025
   </footer>
 
   <script src="assets/js/utils.js"></script>

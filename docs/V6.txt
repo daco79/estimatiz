@@ -324,17 +324,17 @@ Résultat table dvf_voies : 2 360 085 lignes
 ÉTAPE 5 — FINALISATION  [EN COURS]
 ────────────────────────────────────────────────────────────────────────────────
 
-[x] Importer 2020–2025 dans MySQL → fait le 23/04/2026 (11 668 374 lignes, 0 erreur)
-[x] Optimiser autocomplete → dvf_voies + V4.0 (24/04/2026)
-[x] Normaliser types de voie dans CSV → normalize_voies.py (60 645 corrections)
-[ ] Ré-importer dvf_france depuis les CSV normalisés
-    → Lancer : python3 _Base/import_dvf_france_automatique.py  (~1h15)
-    → Puis   : python3 _Base/build_dvf_voies.py               (~3 min)
+[x] Importer 2014–2025 dans MySQL → 13 023 689 lignes (25/04/2026)
+[x] Normaliser types de voie dans CSV → normalize_voies.py (60 645 + 4 163 corrections)
+[x] Optimiser autocomplete → dvf_voies 2 500 086 lignes + autocomplete V4.0
+[x] api/prix-m2.php V4.0 — France entière (arrondissements / départements / villes / rues / évolution)
+[x] Bug P20/P80 corrigé (front lisait p25/p75 inexistants)
+[x] Cache prix-m2 → 6 mois (fichier .cache/api/) — invalider après ré-import
+[x] Mise à jour site-wide : couverture France (index, donnees, a-propos, faq, methodologie)
 [ ] Adapter api/export.php (actuellement non connecté à l'interface)
 [ ] Adapter api/estimate.php (actuellement orphelin, décider si à garder)
 [ ] Activer le filtre géographique (rayon autour d'une adresse) grâce à lat/lon
 [ ] Tests globaux sur toutes les pages
-[ ] Mettre à jour index.php : chiffre "423 000" → dynamique ou mis à jour
 [ ] Déployer sur o2switch
 
 
