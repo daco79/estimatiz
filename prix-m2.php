@@ -142,7 +142,7 @@
     <div class="chart-header">
       <div>
         <p class="chart-title">Évolution du prix au m²</p>
-        <p class="chart-sub">Médiane annuelle · zone ombrée = fourchette P25–P75</p>
+        <p class="chart-sub">Médiane annuelle · zone ombrée = fourchette P20–P80</p>
       </div>
     </div>
     <div class="chart-container">
@@ -212,7 +212,7 @@
           <tr>
             <th data-col="arr">Arrondissement <span class="sort-icon">↕</span></th>
             <th data-col="median" class="sorted">Prix médian /m² <span class="sort-icon">↓</span></th>
-            <th data-col="p25" class="hide-mob">Fourchette P25–P75 <span class="sort-icon">↕</span></th>
+            <th data-col="p20" class="hide-mob">Fourchette P20–P80 <span class="sort-icon">↕</span></th>
             <th data-col="count">Ventes <span class="sort-icon">↕</span></th>
             <th></th>
           </tr>
@@ -292,10 +292,10 @@ function renderTable() {
   });
 
   // Fourchette globale pour la barre proportionnelle
-  const allP25 = allData.map(d=>d.p25).filter(Boolean);
-  const allP75 = allData.map(d=>d.p75).filter(Boolean);
-  const globalMin = Math.min(...allP25);
-  const globalMax = Math.max(...allP75);
+  const allP20 = allData.map(d=>d.p20).filter(Boolean);
+  const allP80 = allData.map(d=>d.p80).filter(Boolean);
+  const globalMin = Math.min(...allP20);
+  const globalMax = Math.max(...allP80);
   const range = globalMax - globalMin || 1;
 
   const tbody = document.getElementById('tblBody');
@@ -307,8 +307,8 @@ function renderTable() {
     if (d.cp === expandedCp) tr.classList.add('expanded');
 
     // Barre proportionnelle
-    const barLeft  = Math.max(0, ((d.p25 - globalMin) / range) * 100);
-    const barWidth = Math.max(2, (((d.p75 - d.p25)) / range) * 100);
+    const barLeft  = Math.max(0, ((d.p20 - globalMin) / range) * 100);
+    const barWidth = Math.max(2, (((d.p80 - d.p20)) / range) * 100);
 
     tr.innerHTML = `
       <td>
@@ -323,9 +323,9 @@ function renderTable() {
       <td><span class="prix-med">${fmtK(d.median)}</span></td>
       <td class="hide-mob">
         <div class="range-bar">
-          <span class="range-val">${fmtK(d.p25)}</span>
+          <span class="range-val">${fmtK(d.p20)}</span>
           <div class="range-track"><div class="range-fill" style="left:${barLeft.toFixed(1)}%;width:${barWidth.toFixed(1)}%"></div></div>
-          <span class="range-val">${fmtK(d.p75)}</span>
+          <span class="range-val">${fmtK(d.p80)}</span>
         </div>
       </td>
       <td><span class="count-pill">${new Intl.NumberFormat('fr-FR').format(d.count)}</span></td>
@@ -400,7 +400,7 @@ async function loadDrill(cp, tr) {
         <tr>
           <td>${rue.voie}</td>
           <td style="font-weight:700;">${fmtK(rue.median)}</td>
-          <td class="hide-mob">${fmtK(rue.p25)} – ${fmtK(rue.p75)}</td>
+          <td class="hide-mob">${fmtK(rue.p20)} – ${fmtK(rue.p80)}</td>
           <td>${rue.count} vente${rue.count>1?'s':''}</td>
         </tr>`).join('');
 
@@ -428,7 +428,7 @@ async function loadDrill(cp, tr) {
           <thead><tr>
             <th ${arrow('voie') && `style="cursor:pointer;user-select:none;" data-dcol="voie"`}>Rue <span class="dsort-icon">↕</span></th>
             <th style="cursor:pointer;user-select:none;" data-dcol="median">Médiane /m² <span class="dsort-icon">↕</span></th>
-            <th class="hide-mob" style="cursor:pointer;user-select:none;" data-dcol="p25">Fourchette <span class="dsort-icon">↕</span></th>
+            <th class="hide-mob" style="cursor:pointer;user-select:none;" data-dcol="p20">Fourchette <span class="dsort-icon">↕</span></th>
             <th style="cursor:pointer;user-select:none;" data-dcol="count">Ventes <span class="dsort-icon">↕</span></th>
           </tr></thead>
           <tbody></tbody>
@@ -537,8 +537,8 @@ async function loadChart() {
     const data = d.evolution;
     const labels = data.map(e => e.annee);
     const medians = data.map(e => e.median);
-    const p25s    = data.map(e => e.p25);
-    const p75s    = data.map(e => e.p75);
+    const p20s    = data.map(e => e.p20);
+    const p80s    = data.map(e => e.p80);
 
     document.getElementById('chartLoading').style.display = 'none';
     const canvas = document.getElementById('evoChart');
@@ -552,9 +552,9 @@ async function loadChart() {
         labels,
         datasets: [
           {
-            // Zone P25–P75 (partie haute : P75)
-            label: 'P75',
-            data: p75s,
+            // Zone P20–P80 (partie haute : P80)
+            label: 'P80',
+            data: p80s,
             borderColor: 'transparent',
             backgroundColor: 'rgba(16,185,129,.12)',
             pointRadius: 0,
@@ -575,9 +575,9 @@ async function loadChart() {
             fill: false,
           },
           {
-            // Zone P25–P75 (partie basse : P25)
-            label: 'P25',
-            data: p25s,
+            // Zone P20–P80 (partie basse : P20)
+            label: 'P20',
+            data: p20s,
             borderColor: 'transparent',
             backgroundColor: 'rgba(16,185,129,.12)',
             pointRadius: 0,
@@ -596,7 +596,7 @@ async function loadChart() {
             callbacks: {
               title: ctx => 'Année ' + ctx[0].label,
               label: ctx => {
-                const map = { 'Médiane €/m²': '  Médiane', 'P75': '  P75', 'P25': '  P25' };
+                const map = { 'Médiane €/m²': '  Médiane', 'P80': '  P80', 'P20': '  P20' };
                 const lbl = map[ctx.dataset.label] ?? ctx.dataset.label;
                 return lbl + ' : ' + new Intl.NumberFormat('fr-FR').format(ctx.parsed.y) + ' €/m²';
               }

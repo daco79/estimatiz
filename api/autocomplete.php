@@ -1,8 +1,11 @@
 <?php
 /**
- * api/autocomplete.php — V4.0 (DVF_France / dvf_voies)
- * Interroge dvf_voies (~2M rues uniques) au lieu de dvf_france (11.6M lignes).
- * Plus de GROUP BY à chaque frappe — requêtes < 50ms.
+ * api/autocomplete.php — V3.0 (DVF_France / V6)
+ * Adapté pour la nouvelle structure :
+ *  - adresse_nom_voie  : type + nom fusionnés ("RUE DE RIVOLI", "AV FOCH")
+ *  - nom_commune       : accentué ("Paris 8e Arrondissement")
+ *  - code_commune      : INSEE 5 cars ("75108")
+ *  - adresse_code_voie : FANTOIR 4 cars (identique à l'ancien Code voie)
  */
 
 declare(strict_types=1);
@@ -20,7 +23,7 @@ if ($limit <= 0 || $limit > 50) $limit = 20;
 if ($qRaw === '') { echo json_encode([]); exit; }
 
 // ======= CACHE SERVEUR (APCu)
-$_cacheKey = 'acV7_' . md5($qRaw . '|' . $communeQ . '|' . $limit);
+$_cacheKey = 'acV6_' . md5($qRaw . '|' . $communeQ . '|' . $limit);
 $_useCache = function_exists('apcu_enabled') && apcu_enabled();
 if ($_useCache) {
     $cached = apcu_fetch($_cacheKey, $found);
@@ -50,6 +53,16 @@ function parseNumeroBtq(string $s): array {
     }
     return ['', ''];
 }
+function normalizeSuffix(string $s): string {
+    $s = mb_strtolower(trim($s), 'UTF-8');
+    $map = [
+        'bis' => 'B', 'b' => 'B',
+        'ter' => 'T', 't' => 'T',
+        'quater' => 'Q', 'q' => 'Q',
+        'a' => 'A', 'c' => 'C', 'd' => 'D', 'e' => 'E',
+    ];
+    return $map[$s] ?? '';
+}
 function detectCp(string $s): string {
     return preg_match('~\b(\d{5})\b~', $s, $m) ? $m[1] : '';
 }
@@ -64,6 +77,7 @@ function romanToInt(string $r): int {
 }
 
 // ======= MAPPING TYPE DE VOIE : saisie utilisateur → abréviation DB
+// La DB stocke ex: "AV FOCH", "BD HAUSSMANN", "RUE DE RIVOLI", "CHE DE LA CROIX"
 $typeUserToDb = [
     'rue'=>'RUE','r'=>'RUE',
     'avenue'=>'AV','av'=>'AV','ave'=>'AV','aven'=>'AV',
@@ -92,6 +106,7 @@ $typeUserToDb = [
     'grande rue'=>'GRANDE RUE','gd rue'=>'GRANDE RUE','grande'=>'GRANDE RUE',
 ];
 
+// Abréviations dans la partie non-type (saint→ST etc.)
 $voieWordNorm = [
     'saint'=>'ST','sainte'=>'STE',
     'general'=>'GAL','generale'=>'GAL',
@@ -110,6 +125,8 @@ function normalizeVoieTokens(array $tokens, array $wordNorm): array {
     return $out;
 }
 
+// Détecte "paris 8", "lyon 3", "marseille 5" — retourne commune_like pour nom_commune
+// et code_commune exact pour filtre rapide
 function detectVilleArrondissement(array $tokensNoAccent): array {
     $out = ['commune_like' => '', 'code_commune' => '', 'cp' => ''];
     $n = count($tokensNoAccent);
@@ -151,8 +168,10 @@ function runQuery(PDO $pdo, string $sql, array $params): array {
 }
 
 // ======= PARSING DE LA SAISIE
+
 $rawNoAccent = stripAccents($qRaw);
 
+// Commune explicite via virgule : "2 rue de rivoli, paris"
 $communePartsAccented = [];
 $communeExplicit = false;
 $lastCommaPos = mb_strrpos($qRaw, ',');
@@ -168,33 +187,46 @@ if ($lastCommaPos !== false) {
 
 $tokensNoAccent = preg_split('~\s+~u', trim($rawNoAccent)) ?: [];
 
+// n° + btq en tête
 $no_voie = ''; $btq = '';
 if (!empty($tokensNoAccent)) {
     [$no, $b] = parseNumeroBtq($tokensNoAccent[0]);
-    if ($no !== '') { $no_voie = $no; $btq = $b; array_shift($tokensNoAccent); }
+    if ($no !== '') {
+        $no_voie = $no;
+        $btq = $b;
+        array_shift($tokensNoAccent);
+    } elseif (($suffix = normalizeSuffix($tokensNoAccent[0])) !== '') {
+        $btq = $suffix;
+        array_shift($tokensNoAccent);
+    }
 }
 
+// Paramètre communeQ prioritaire
 if ($communeQ !== '') {
     $communePartsAccented = preg_split('~\s+~u', $communeQ) ?: [];
     $communeExplicit = true;
 }
 
+// CP dans la saisie
 $cpQuery      = detectCp($qRaw);
 $code_commune = '';
 $commune_like = '';
 
 if (!$communeExplicit) {
+    // Tente de détecter "paris 8", "lyon 3"...
     $detect = detectVilleArrondissement($tokensNoAccent);
     if ($detect['commune_like'] !== '') {
         $commune_like = $detect['commune_like'];
         $code_commune = $detect['code_commune'];
         if ($cpQuery === '') $cpQuery = $detect['cp'];
+        // Retire ville+arrondissement des tokens voie
         $tokensNoAccent = array_values(array_filter($tokensNoAccent, function ($t) {
             return !preg_match('~^\d{1,2}$~', $t)
                 && !in_array(mb_strtolower($t, 'UTF-8'), ['paris','lyon','marseille'], true)
                 && !preg_match('~^(i|v|x|l|c|d|m)+$~i', $t);
         }));
     } elseif ($cpQuery === '') {
+        // Ville seule en fin de saisie : "2 rue de rivoli paris"
         static $knownCities = ['paris','lyon','marseille','bordeaux','toulouse',
                                'nantes','lille','nice','strasbourg','montpellier','rennes'];
         $lastTok = !empty($tokensNoAccent) ? mb_strtolower(end($tokensNoAccent), 'UTF-8') : '';
@@ -209,11 +241,13 @@ if (!$communeExplicit) {
     $commune_like = $communeStr . '%';
 }
 
+// Commune via parts sans arrondissement
 if ($commune_like === '' && !empty($communePartsAccented)) {
     $commune_like = trim(implode(' ', $communePartsAccented)) . '%';
 }
 
 // ======= CONSTRUCTION DU VOIE SEARCH
+// Extraire le type de voie (1 ou 2 tokens)
 $voieTokens = $tokensNoAccent;
 $typePrefix = '';
 for ($len = 2; $len >= 1; $len--) {
@@ -225,9 +259,11 @@ for ($len = 2; $len >= 1; $len--) {
     }
 }
 
-$voieRest       = normalizeVoieTokens($voieTokens, $voieWordNorm);
-$voieSearch     = trim(($typePrefix !== '' ? $typePrefix . ' ' : '') . implode(' ', $voieRest));
-$voieKeyword    = trim(implode(' ', $voieRest));
+// Normalise les mots restants (saint→ST etc.)
+$voieRest   = normalizeVoieTokens($voieTokens, $voieWordNorm);
+$voieSearch = trim(($typePrefix !== '' ? $typePrefix . ' ' : '') . implode(' ', $voieRest));
+$voieKeyword = trim(implode(' ', $voieRest)); // pour le fallback %LIKE%
+// Tokens bruts sans normalisation (pour gérer SAINT vs ST incohérence)
 $voieKeywordRaw = trim(implode(' ', array_map('mb_strtoupper', $voieTokens)));
 
 // ======= PDO
@@ -239,6 +275,7 @@ try {
     echo json_encode([]);
     exit;
 }
+$tableDvf = db_table_dvf();
 
 // ======= DÉDOUBLONNAGE
 $results = [];
@@ -250,16 +287,18 @@ $push = function (array $r) use (&$results) {
     if (!isset($results[$key])) $results[$key] = $r;
 };
 
-// Requête de base sur dvf_voies — pas de GROUP BY
-$sel = "SELECT adresse_code_voie, code_postal, nom_commune, adresse_nom_voie, section
-        FROM dvf_voies WHERE 1=1";
+$sel = "SELECT adresse_code_voie, code_postal, nom_commune, adresse_nom_voie,
+               MIN(SUBSTRING(id_parcelle, 9, 2)) AS section
+        FROM {$tableDvf} WHERE 1=1";
+$grp = " GROUP BY adresse_code_voie, code_postal, nom_commune, adresse_nom_voie";
 
+// Ajoute les filtres commune (code_commune exact prioritaire)
 $addCommune = function (string &$sql, array &$params) use ($commune_like, $code_commune, $cpQuery) {
     if ($code_commune !== '') {
         $sql .= " AND code_commune = ?";
         $params[] = $code_commune;
     } elseif ($commune_like !== '') {
-        $sql .= " AND LOWER(nom_commune) LIKE LOWER(?)";
+        $sql .= " AND nom_commune LIKE ?";
         $params[] = $commune_like;
     }
     if ($cpQuery !== '') {
@@ -268,10 +307,22 @@ $addCommune = function (string &$sql, array &$params) use ($commune_like, $code_
     }
 };
 
-$hasCommune  = ($commune_like !== '' || $code_commune !== '' || $cpQuery !== '');
-$foundExact  = false; // true si Palier A a trouvé avec typePrefix → skip B2
+function addNumeroSuffixe(string &$sql, array &$params, string $no_voie, string $btq): void {
+    if ($no_voie !== '') {
+        $sql .= " AND (adresse_numero = ? OR adresse_numero LIKE ?)";
+        $params[] = $no_voie;
+        $params[] = likeWrap($no_voie);
+    }
+    if ($btq !== '') {
+        $sql .= " AND UPPER(adresse_suffixe) = ?";
+        $params[] = mb_strtoupper($btq, 'UTF-8');
+    }
+}
+
+$hasCommune = ($commune_like !== '' || $code_commune !== '' || $cpQuery !== '');
 
 // ======= Palier S : split suffix (voie…ville) — sans commune explicite
+// La partie "commune" doit avoir ≥ 3 caractères pour éviter "DE" → Decines
 if (!$hasCommune && $voieSearch !== '') {
     $tok = preg_split('~\s+~u', $voieSearch) ?: [];
     $n   = count($tok);
@@ -281,59 +332,67 @@ if (!$hasCommune && $voieSearch !== '') {
         if ($voieP === '' || mb_strlen($commC) < 3) continue;
         $sql = $sel; $p = [];
         $sql .= " AND adresse_nom_voie LIKE ?"; $p[] = prefixWrap($voieP);
-        $sql .= " AND LOWER(nom_commune) LIKE LOWER(?)"; $p[] = prefixWrap($commC);
-        $sql .= " ORDER BY LENGTH(adresse_nom_voie) ASC LIMIT " . (int)$limit;
+        $sql .= " AND nom_commune LIKE ?"; $p[] = prefixWrap($commC);
+        addNumeroSuffixe($sql, $p, $no_voie, $btq);
+        $sql .= $grp . " ORDER BY LENGTH(adresse_nom_voie) ASC LIMIT " . (int)$limit;
         foreach (runQuery($pdo, $sql, $p) as $r) { $push($r); if (count($results) >= $limit) break 2; }
     }
 }
 
 // ======= Palier A : prefix voie + commune
+// Si pas de commune précisée, prioriser Paris (75xxx) dans les résultats
 if (count($results) < $limit && $voieSearch !== '') {
     $sql = $sel; $p = [];
     $sql .= " AND adresse_nom_voie LIKE ?"; $p[] = prefixWrap($voieSearch);
+    addNumeroSuffixe($sql, $p, $no_voie, $btq);
     $addCommune($sql, $p);
     if ($cpQuery !== '') {
-        $sql .= " ORDER BY CASE WHEN code_postal = ? THEN 0 ELSE 1 END, LENGTH(adresse_nom_voie) ASC LIMIT " . (int)$limit;
+        $sql .= $grp . " ORDER BY CASE WHEN code_postal = ? THEN 0 ELSE 1 END, LENGTH(adresse_nom_voie) ASC LIMIT " . (int)$limit;
         $p[] = $cpQuery;
     } else {
-        $sql .= " ORDER BY CASE WHEN code_postal LIKE '75%' THEN 0 ELSE 1 END, LENGTH(adresse_nom_voie) ASC LIMIT " . (int)$limit;
+        // Sans commune précisée : Paris en premier
+        $sql .= $grp . " ORDER BY CASE WHEN code_postal LIKE '75%' THEN 0 ELSE 1 END, LENGTH(adresse_nom_voie) ASC LIMIT " . (int)$limit;
     }
     foreach (runQuery($pdo, $sql, $p) as $r) { $push($r); if (count($results) >= $limit) break; }
-    if ($typePrefix !== '' && count($results) > 0) $foundExact = true;
 }
 
 // ======= Palier A2 : prefix voie sans commune (élargit la recherche)
 if (count($results) < $limit && $voieSearch !== '' && $hasCommune) {
     $sql = $sel; $p = [];
     $sql .= " AND adresse_nom_voie LIKE ?"; $p[] = prefixWrap($voieSearch);
-    $sql .= " ORDER BY LENGTH(adresse_nom_voie) ASC LIMIT " . (int)$limit;
+    addNumeroSuffixe($sql, $p, $no_voie, $btq);
+    $sql .= $grp . " ORDER BY LENGTH(adresse_nom_voie) ASC LIMIT " . (int)$limit;
     foreach (runQuery($pdo, $sql, $p) as $r) { $push($r); if (count($results) >= $limit) break; }
 }
 
-// ======= Palier B : prefix sans commune (Paris prioritaire)
+// ======= Palier B : prefix sans commune (quand pas de commune du tout)
+// Paris (75xxx) prioritaire dans le tri
 if (count($results) < $limit && $voieSearch !== '' && !$hasCommune) {
     $sql = $sel; $p = [];
     $sql .= " AND adresse_nom_voie LIKE ?"; $p[] = prefixWrap($voieSearch);
-    $sql .= " ORDER BY CASE WHEN code_postal LIKE '75%' THEN 0 ELSE 1 END, LENGTH(adresse_nom_voie) ASC LIMIT " . (int)$limit;
+    addNumeroSuffixe($sql, $p, $no_voie, $btq);
+    $sql .= $grp . " ORDER BY CASE WHEN code_postal LIKE '75%' THEN 0 ELSE 1 END, LENGTH(adresse_nom_voie) ASC LIMIT " . (int)$limit;
     foreach (runQuery($pdo, $sql, $p) as $r) { $push($r); if (count($results) >= $limit) break; }
 }
 
-// ======= Palier B2 : %keyword% avec commune (ignoré si on a déjà un match avec type de voie)
-if (!$foundExact && count($results) < $limit && ($voieKeyword !== '' || $voieSearch !== '')) {
+// ======= Palier B2 : %keyword% avec commune (gère SAINT/ST incohérences)
+if (count($results) < $limit && ($voieKeyword !== '' || $voieSearch !== '')) {
     $kw = $voieKeyword !== '' ? $voieKeyword : $voieSearch;
     $sql = $sel; $p = [];
     $sql .= " AND adresse_nom_voie LIKE ?"; $p[] = likeWrap($kw);
+    addNumeroSuffixe($sql, $p, $no_voie, $btq);
     $addCommune($sql, $p);
-    $sql .= " ORDER BY LENGTH(adresse_nom_voie) ASC LIMIT " . (int)$limit;
+    $sql .= $grp . " ORDER BY LENGTH(adresse_nom_voie) ASC LIMIT " . (int)$limit;
     foreach (runQuery($pdo, $sql, $p) as $r) { $push($r); if (count($results) >= $limit) break; }
 }
 
-// ======= Palier B2b : %keyword brut% (SAINT vs ST)
-if (!$foundExact && count($results) < $limit && $voieKeywordRaw !== '' && $voieKeywordRaw !== $voieKeyword) {
+// ======= Palier B2b : %keyword brut% (SAINT au lieu de ST, variante non normalisée)
+if (count($results) < $limit && $voieKeywordRaw !== '' && $voieKeywordRaw !== $voieKeyword) {
     $sql = $sel; $p = [];
     $sql .= " AND adresse_nom_voie LIKE ?"; $p[] = likeWrap($voieKeywordRaw);
+    addNumeroSuffixe($sql, $p, $no_voie, $btq);
     $addCommune($sql, $p);
-    $sql .= " ORDER BY LENGTH(adresse_nom_voie) ASC LIMIT " . (int)$limit;
+    $sql .= $grp . " ORDER BY LENGTH(adresse_nom_voie) ASC LIMIT " . (int)$limit;
     foreach (runQuery($pdo, $sql, $p) as $r) { $push($r); if (count($results) >= $limit) break; }
 }
 
@@ -341,7 +400,7 @@ if (!$foundExact && count($results) < $limit && $voieKeywordRaw !== '' && $voieK
 if (count($results) < $limit && $voieSearch === '' && $hasCommune) {
     $sql = $sel; $p = [];
     $addCommune($sql, $p);
-    $sql .= " ORDER BY LENGTH(adresse_nom_voie) ASC LIMIT " . (int)$limit;
+    $sql .= $grp . " ORDER BY LENGTH(adresse_nom_voie) ASC LIMIT " . (int)$limit;
     foreach (runQuery($pdo, $sql, $p) as $r) { $push($r); if (count($results) >= $limit) break; }
 }
 
@@ -368,8 +427,8 @@ foreach ($results as $r) {
         'commune'         => $com,
         'cp'              => $cp,
         'adresse_nom_voie'=> $nomVoie,
-        'voie'            => $nomVoie,
-        'type_voie'       => '',
+        'voie'            => $nomVoie,   // compat descendante
+        'type_voie'       => '',         // compat descendante (fusionné dans adresse_nom_voie)
         'no_voie'         => $no_voie,
         'btq'             => $btq,
         'section'         => $sec,
@@ -377,6 +436,7 @@ foreach ($results as $r) {
     if (count($out) >= $limit) break;
 }
 
+// Résultat vide : renvoie la saisie brute pour ne pas bloquer l'UI
 if (empty($out)) {
     $out[] = [
         'label'           => $qRaw,

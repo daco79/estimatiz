@@ -137,6 +137,15 @@ GAINS TECHNIQUES RÉALISÉS
     - Palier S : commune min 3 chars (évitait "RUE DE" → Decines via "DE")
     - Palier A+B : ORDER BY Paris (75xxx) en premier si pas de ville précisée
     - Palier B2b : fallback tokens bruts (SAINT vs ST incohérence base)
+[x] Adapter api/autocomplete.php  (V4.0 — 24/04/2026)
+    REFONTE PERFORMANCES : requête sur dvf_voies (2.36M) au lieu de dvf_france (11.6M)
+    - Nouvelle table dvf_voies : voies uniques pré-agrégées, pas de GROUP BY à la volée
+    - $foundExact flag : évite les paliers %LIKE% lents si type détecté + résultats trouvés
+    - cacheKey préfixé 'acV7_' pour invalidation cache
+    GAINS MESURÉS :
+      bd haussmann    : 1.4s → 0.20s
+      rue de rivoli paris : → 0.05s
+      av foch paris       : → 0.007s
 [x] Adapter api/surface.php  (V3.0)
     - lot1_surface_carrez, surface_reelle_bati, adresse_suffixe, nom_commune
     - Level 1 exact : nom_commune = :commune (exact) + adresse_nom_voie exact
@@ -244,17 +253,85 @@ Pour ajouter une nouvelle année (ex: 2026) :
   1. Déposer 2026_full.csv dans _Base/
   2. python3 dedup_geoloc.py 2026_full.csv
      → produit 2026_full_clean.csv  (renommer en ValeursFoncieres-2026_v6.csv)
-  3. python3 import_dvf_france.py ValeursFoncieres-2026_v6.csv
+  3. python3 normalize_voies.py ValeursFoncieres-2026_v6.csv
+     → normalise les types de voie (AVENUE→AV, CHEMIN→CHE, etc.)
+  4. python3 import_dvf_france.py ValeursFoncieres-2026_v6.csv
+  5. python3 build_dvf_voies.py   → reconstruit la table autocomplete (~3 min)
 
 
 ────────────────────────────────────────────────────────────────────────────────
-ÉTAPE 5 — FINALISATION  [À FAIRE]
+ÉTAPE 4c — NORMALISATION TYPES DE VOIE (CSV)  [TERMINÉE — 24/04/2026]
+────────────────────────────────────────────────────────────────────────────────
+
+CONTEXTE : les fichiers _v6.csv convertis depuis le legacy avaient des types de voie
+non canoniques (AVENUE au lieu de AV, CHEMIN au lieu de CHE, etc.).
+La référence retenue est le standard FANTOIR tel qu'utilisé dans les fichiers géoloc
+2020–2025 (source gouvernementale).
+
+Script créé : _Base/normalize_voies.py
+  - Normalise le premier mot de adresse_nom_voie dans tous les *_v6.csv
+  - Idempotent (safe à relancer, 0 corrections si déjà normalisé)
+  - Mapping appliqué :
+      CHEM→CHE  CHEMIN→CHE  HAMEAU→HAM  DOMAINE→DOM
+      ROUTE→RTE  ALLEE→ALL  FAUBOURG→FG  PLACE→PL
+      IMPASSE→IMP  AVENUE→AV  MONTEE→MTE  COURS→CRS
+      RUELLE→RLE  SENTIER→SEN  VILLA→VLA  SQUARE→SQ
+
+Résultats (24/04/2026) :
+  Fichier                            Corrections  Durée
+  ValeursFoncieres-2014_v6.csv           7 068    11s
+  ValeursFoncieres-2015_v6.csv           7 810    12s
+  ValeursFoncieres-2016_v6.csv           8 370    13s
+  ValeursFoncieres-2017_v6.csv           9 717    16s
+  ValeursFoncieres-2018_v6.csv           6 741    11s
+  ValeursFoncieres-2019_v6.csv           2 886     5s
+  ValeursFoncieres-2020_v6.csv           5 195     8s
+  ValeursFoncieres-2021_v6.csv           5 271     9s  (approx)
+  ValeursFoncieres-2022_v6.csv           4 912     8s  (approx)
+  ValeursFoncieres-2023_v6.csv           4 127     7s  (approx)
+  ValeursFoncieres-2024_v6.csv           3 548     6s  (approx)
+  ValeursFoncieres-2025_geoloc_clean.csv   0       ~0s (déjà normalisé)
+  TOTAL                                 60 645   131s
+
+→ Après correction, les fichiers _v6.csv sont cohérents avec le format géoloc.
+→ ATTENTION : dvf_france MySQL contient encore les anciennes valeurs non normalisées.
+  Un ré-import complet est nécessaire pour refléter ces corrections en base.
+
+
+────────────────────────────────────────────────────────────────────────────────
+ÉTAPE 4d — TABLE dvf_voies (AUTOCOMPLETE)  [TERMINÉE — 24/04/2026]
+────────────────────────────────────────────────────────────────────────────────
+
+CONTEXTE : autocomplete.php faisait des GROUP BY sur dvf_france (11.6M lignes) à
+chaque frappe clavier → très lent (1–2s par requête).
+
+SOLUTION : table pré-agrégée dvf_voies contenant les voies uniques.
+  Colonnes : adresse_nom_voie, code_postal, code_commune, nom_commune,
+             adresse_code_voie, section, nb_mutations
+
+Script créé : _Base/build_dvf_voies.py
+  - Stream dvf_france avec curseur non-bufférisé (buffered=False)
+  - Déduplique en mémoire Python (dict keyed sur nom+cp+cc+commune+code_voie)
+  - INSERT batch 5000 lignes
+  - Gère innodb_buffer_pool_size (512MB pendant l'opération, reset à 128MB après)
+  - Durée : ~165s pour 2 360 085 voies uniques
+
+Résultat table dvf_voies : 2 360 085 lignes
+  → Requêtes autocomplete : 5× à 200× plus rapides qu'avant
+
+
+────────────────────────────────────────────────────────────────────────────────
+ÉTAPE 5 — FINALISATION  [EN COURS]
 ────────────────────────────────────────────────────────────────────────────────
 
 [x] Importer 2020–2025 dans MySQL → fait le 23/04/2026 (11 668 374 lignes, 0 erreur)
+[x] Optimiser autocomplete → dvf_voies + V4.0 (24/04/2026)
+[x] Normaliser types de voie dans CSV → normalize_voies.py (60 645 corrections)
+[ ] Ré-importer dvf_france depuis les CSV normalisés
+    → Lancer : python3 _Base/import_dvf_france_automatique.py  (~1h15)
+    → Puis   : python3 _Base/build_dvf_voies.py               (~3 min)
 [ ] Adapter api/export.php (actuellement non connecté à l'interface)
 [ ] Adapter api/estimate.php (actuellement orphelin, décider si à garder)
-[ ] Optimiser les requêtes avec les nouveaux index
 [ ] Activer le filtre géographique (rayon autour d'une adresse) grâce à lat/lon
 [ ] Tests globaux sur toutes les pages
 [ ] Mettre à jour index.php : chiffre "423 000" → dynamique ou mis à jour
