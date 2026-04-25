@@ -5,6 +5,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Estimatiz – Estimer un bien</title>
+  <!-- SEO enhancements -->
+  <meta name="description" content="Estimez votre bien immobilier en quelques clics en utilisant les ventes réelles et les données DVF. Ajustez la surface et les critères pour obtenir une estimation personnalisée." />
+  <link rel="canonical" href="https://www.estimatiz.fr/estimation.php" />
+  <!-- Open Graph tags -->
+  <meta property="og:title" content="Estimatiz – Estimer un bien" />
+  <meta property="og:description" content="Estimez votre bien immobilier en quelques clics en utilisant les ventes réelles et les données DVF. Ajustez la surface et les critères pour obtenir une estimation personnalisée." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.estimatiz.fr/estimation.php" />
+  <meta property="og:locale" content="fr_FR" />
   <link rel="stylesheet" href="assets/css/site.css" />
   <style>
     :root{ --c1:#1E3A8A; --c2:#10B981; --c3:#111827; --c4:#E5E7EB; }
@@ -92,13 +101,12 @@
 <body>
 <?php include 'includes/nav.php'; ?>
 
-
   <!-- ── Barre de recherche ── -->
   <section class="search-hero">
     <h1>Estimer votre bien immobilier</h1>
     <div class="search-card">
       <div class="srch-box">
-        <input id="srchInput" type="text" placeholder="Ex : 12 rue de Rivoli, Paris  ou  cours Victor Hugo, Bordeaux" autocomplete="off" />
+        <input id="srchInput" type="text" placeholder="Ex : 12 rue de Rivoli, Paris" autocomplete="off" />
         <div id="srchSuggestions" class="srch-suggestions"></div>
         <button type="button" id="srchBtn" disabled>Estimer cette adresse &rarr;</button>
       </div>
@@ -113,10 +121,8 @@
   </div>
 
   <div class="wrap">
-
     <div class="card">
       <div id="formStatus" class="status"></div>
-
       <!-- Bloc 1 : Votre bien -->
       <div class="section-block bien">
         <p class="section-title">Votre bien</p>
@@ -127,7 +133,6 @@
         </div>
         <p class="note" id="surfaceHint">Surface médiane de la rue : n.c.</p>
       </div>
-
       <!-- Bloc 2 : Filtres des comparables -->
       <div class="section-block filtres">
         <p class="section-title">Filtres des ventes comparables</p>
@@ -156,11 +161,9 @@
           <button type="button" id="btnReset" class="btn-reset">Réinitialiser les filtres</button>
         </div>
       </div>
-
       <!-- Bouton Visualiser -->
       <button type="button" id="btnVisualiser" class="btn-visualiser">Visualiser les résultats</button>
     </div>
-
   </div>
 
   <script src="assets/js/utils.js"></script>
@@ -172,9 +175,7 @@
       const btn  = document.getElementById('srchBtn');
       const hint = document.getElementById('srchHint');
       let selected = null, t;
-
       function setHint(msg, type) { hint.className = `srch-hint is-visible ${type}`; hint.textContent = msg; }
-
       inp.addEventListener('input', () => {
         const v = inp.value.trim();
         selected = null; btn.disabled = true; inp.classList.remove('is-selected');
@@ -205,9 +206,7 @@
           } catch { sugg.style.display = 'none'; setHint('Impossible de récupérer les suggestions.', 'error'); }
         }, 250);
       });
-
       document.addEventListener('click', e => { if (!e.target.closest('.srch-box')) sugg.style.display = 'none'; });
-
       btn.addEventListener('click', () => {
         if (!selected) return;
         const p = new URLSearchParams({
@@ -233,7 +232,6 @@
       btq:       params.get('btq')       || '',
       section:   params.get('section')   || '',
     };
-
     if (!suggestion.code_voie && !suggestion.commune) {
       document.getElementById('addrBarLabel').textContent = 'Aucune adresse sélectionnée.';
       document.getElementById('formStatus').className = 'status is-visible info';
@@ -243,7 +241,6 @@
       document.getElementById('srchInput').value = suggestion.label;
       document.title = `Estimatiz – ${suggestion.label}`;
       document.getElementById('addrBarLabel').textContent = suggestion.label;
-
       const formStatus      = document.getElementById('formStatus');
       const surfaceInput    = document.getElementById('surfaceInput');
       const surfaceHint     = document.getElementById('surfaceHint');
@@ -252,15 +249,12 @@
       const piecesInput     = document.getElementById('piecesInput');
       const btnReset        = document.getElementById('btnReset');
       const btnVisualiser   = document.getElementById('btnVisualiser');
-
       function showStatus(message, type = 'info') {
         EstimatizUtils.setStatus(formStatus, message, type, true);
       }
-
       function setLoading(btn, loading, labelIdle) {
         EstimatizUtils.setLoading(btn, loading, labelIdle);
       }
-
       async function fetchSurface(pieces = '') {
         const p = new URLSearchParams({
           code_voie: suggestion.code_voie, commune: suggestion.commune,
@@ -273,7 +267,6 @@
         if (!r.ok) throw new Error('HTTP ' + r.status);
         return r.json();
       }
-
       function applySurfaceData(data) {
         if (data?.ok && data.surface) {
           surfaceInput.value = data.surface;
@@ -290,24 +283,20 @@
           showStatus('Aucune surface indicative trouvée pour cette adresse. Saisissez une surface manuellement.', 'info');
         }
       }
-
       btnReset.addEventListener('click', () => {
         surfaceInput.value = ''; surfaceMinInput.value = ''; surfaceMaxInput.value = ''; piecesInput.value = '';
         surfaceHint.textContent = 'Surface médiane de la rue : n.c.';
         showStatus('Filtres réinitialisés.', 'info');
       });
-
       btnVisualiser.addEventListener('click', async () => {
         const surface = (surfaceInput.value || '').trim();
         let surfaceMin = (surfaceMinInput.value || '').trim();
         let surfaceMax = (surfaceMaxInput.value || '').trim();
         const pieces   = piecesInput.value;
-
         if (surfaceMin && surfaceMax && Number(surfaceMin) > Number(surfaceMax)) {
           [surfaceMin, surfaceMax] = [surfaceMax, surfaceMin];
         }
         setLoading(btnVisualiser, true, 'Visualiser les résultats');
-
         const baseParams = new URLSearchParams({
           code_voie: suggestion.code_voie, commune: suggestion.commune,
           section: suggestion.section, type_voie: suggestion.type_voie,
@@ -315,7 +304,6 @@
           surface_min: surfaceMin, surface_max: surfaceMax,
         });
         if (pieces) baseParams.set('pieces', pieces);
-
         let mutData;
         try {
           mutData = await fetch('api/mutations.php?' + baseParams, { headers: { Accept: 'application/json' } }).then(r => r.json());
@@ -325,22 +313,18 @@
           setLoading(btnVisualiser, false, 'Visualiser les résultats');
           return;
         }
-
         const rows = Array.isArray(mutData?.rows) ? mutData.rows : [];
         if (!rows.length) {
           showStatus("Aucune mutation trouvée pour ces critères. Essayez d'élargir les filtres.", 'error');
           setLoading(btnVisualiser, false, 'Visualiser les résultats');
           return;
         }
-
         sessionStorage.setItem('estimatiz_results', JSON.stringify({
           label: suggestion.label, surface, surfaceMin, surfaceMax, pieces, mutData, suggestion,
         }));
-
         showStatus(`${rows.length} résultat${rows.length > 1 ? 's' : ''} trouvé${rows.length > 1 ? 's' : ''}. Ouverture…`, 'success');
         window.location.href = 'results.php';
       });
-
       /* ── Restauration si retour depuis results.php ── */
       const _saved = sessionStorage.getItem('estimatiz_results');
       if (_saved) {

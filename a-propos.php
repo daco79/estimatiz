@@ -5,12 +5,20 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>À propos – Estimatiz</title>
+  <!-- SEO enhancements -->
+  <meta name="description" content="Découvrez qui se cache derrière Estimatiz, ses valeurs et sa mission. Un outil transparent pour rendre l’estimation immobilière accessible à tous." />
+  <link rel="canonical" href="https://www.estimatiz.fr/a-propos.php" />
+  <!-- Open Graph tags -->
+  <meta property="og:title" content="À propos – Estimatiz" />
+  <meta property="og:description" content="Découvrez qui se cache derrière Estimatiz, ses valeurs et sa mission. Un outil transparent pour rendre l’estimation immobilière accessible à tous." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://www.estimatiz.fr/a-propos.php" />
+  <meta property="og:locale" content="fr_FR" />
   <link rel="stylesheet" href="assets/css/site.css" />
   <?php include 'includes/content-style.php'; ?>
 </head>
 <body>
 <?php include 'includes/nav.php'; ?>
-
 
   <div class="page-hero">
     <h1>À propos d'Estimatiz</h1>
@@ -57,11 +65,12 @@
 
     <div class="c-section">
       <h2>Couverture et évolution</h2>
-      <p>Estimatiz couvre la <strong>France entière</strong> — métropole et DOM — avec les données DVF de 2014 à 2025, soit plus de 13 millions de transactions.</p>
+      <p>La version actuelle couvre <strong>Paris intramuros (75001–75020)</strong> avec les données DVF de 2014 à 2025.</p>
       <p>Les développements prévus incluent :</p>
       <ul>
+        <li>Extension à la petite couronne (92, 93, 94) et aux grandes villes (Lyon, Marseille, Bordeaux…)</li>
         <li>Visualisation cartographique des ventes</li>
-        <li>Évolution des prix dans le temps par rue ou commune</li>
+        <li>Évolution des prix dans le temps par rue ou arrondissement</li>
         <li>Comparaison entre deux zones</li>
       </ul>
     </div>
@@ -75,7 +84,7 @@
   </div>
 
   <footer>
-    Estimatiz — Données <a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/" target="_blank" rel="noopener">DVF · data.gouv.fr</a> &nbsp;|&nbsp; France 2014–2025
+    Estimatiz — Données <a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/" target="_blank" rel="noopener">DVF · data.gouv.fr</a> &nbsp;|&nbsp; Paris 2014–2025
   </footer>
 
 </body>

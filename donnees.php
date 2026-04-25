@@ -5,12 +5,20 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Données utilisées – Estimatiz</title>
+  <!-- SEO enhancements -->
+  <meta name="description" content="Découvrez les données DVF utilisées par Estimatiz, leur composition, leur couverture et la façon dont elles sont traitées et mises à jour." />
+  <link rel="canonical" href="https://www.estimatiz.fr/donnees.php" />
+  <!-- Open Graph tags -->
+  <meta property="og:title" content="Données utilisées – Estimatiz" />
+  <meta property="og:description" content="Découvrez les données DVF utilisées par Estimatiz, leur composition, leur couverture et la façon dont elles sont traitées et mises à jour." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://www.estimatiz.fr/donnees.php" />
+  <meta property="og:locale" content="fr_FR" />
   <link rel="stylesheet" href="assets/css/site.css" />
   <?php include 'includes/content-style.php'; ?>
 </head>
 <body>
 <?php include 'includes/nav.php'; ?>
-
 
   <div class="page-hero">
     <h1>Données utilisées</h1>
@@ -69,10 +77,14 @@
       <h2>Couverture actuelle</h2>
       <p>La base de données importée dans Estimatiz couvre actuellement :</p>
       <div class="c-stat-grid">
-        <div class="c-stat"><div class="c-stat-val">13 millions</div><div class="c-stat-lbl">ventes importées</div></div>
+        <div class="c-stat"><div class="c-stat-val">423 043</div><div class="c-stat-lbl">ventes importées</div></div>
         <div class="c-stat"><div class="c-stat-val">2014–2025</div><div class="c-stat-lbl">années couvertes</div></div>
-        <div class="c-stat"><div class="c-stat-val">France entière</div><div class="c-stat-lbl">zone couverte</div></div>
-        <div class="c-stat"><div class="c-stat-val">101</div><div class="c-stat-lbl">départements</div></div>
+        <div class="c-stat"><div class="c-stat-val">Paris 75</div><div class="c-stat-lbl">zone couverte</div></div>
+        <div class="c-stat"><div class="c-stat-val">20</div><div class="c-stat-lbl">arrondissements</div></div>
+      </div>
+      <div class="c-warn" style="margin-top:20px;">
+        <strong>Couverture limitée à Paris intramuros pour l'instant.</strong>
+        L'extension à d'autres villes (petite couronne, Lyon, Marseille…) est prévue dans les prochaines versions.
       </div>
     </div>
 
@@ -80,7 +92,7 @@
       <h2>Traitement des données</h2>
       <p>Les fichiers DVF bruts sont traités avant import pour garantir la qualité des données :</p>
       <ul>
-        <li><strong>Filtre géographique</strong> : toutes les transactions France entière sont conservées (métropole + DOM).</li>
+        <li><strong>Filtre géographique</strong> : seules les lignes correspondant aux codes postaux 75001–75020 sont conservées.</li>
         <li><strong>Dédoublonnage</strong> : le format DVF génère plusieurs lignes par vente quand plusieurs locaux sont vendus ensemble (appartement + cave, parking…). Les doublons sont détectés et supprimés, en conservant la ligne la plus informative.</li>
         <li><strong>Validation</strong> : les lignes sans surface (ni Carrez ni réelle) sont exclues. Les valeurs mal formatées sont normalisées.</li>
         <li><strong>Import par lots</strong> : les données sont insérées par lots de 2 000 lignes pour garantir la stabilité.</li>
@@ -106,7 +118,7 @@
   </div>
 
   <footer>
-    Estimatiz — Données <a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/" target="_blank" rel="noopener">DVF · data.gouv.fr</a> &nbsp;|&nbsp; France 2014–2025
+    Estimatiz — Données <a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/" target="_blank" rel="noopener">DVF · data.gouv.fr</a> &nbsp;|&nbsp; Paris 2014–2025
   </footer>
 
 </body>

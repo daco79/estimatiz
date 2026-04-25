@@ -5,12 +5,20 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Méthodologie – Estimatiz</title>
+  <!-- SEO enhancements -->
+  <meta name="description" content="Apprenez la méthodologie d’Estimatiz : sources des données DVF, recherche des comparables, filtrage statistique, calcul des estimations et limites." />
+  <link rel="canonical" href="https://www.estimatiz.fr/methodologie.php" />
+  <!-- Open Graph tags -->
+  <meta property="og:title" content="Méthodologie – Estimatiz" />
+  <meta property="og:description" content="Apprenez la méthodologie d’Estimatiz : sources des données DVF, recherche des comparables, filtrage statistique, calcul des estimations et limites." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://www.estimatiz.fr/methodologie.php" />
+  <meta property="og:locale" content="fr_FR" />
   <link rel="stylesheet" href="assets/css/site.css" />
   <?php include 'includes/content-style.php'; ?>
 </head>
 <body>
 <?php include 'includes/nav.php'; ?>
-
 
   <div class="page-hero">
     <h1>Méthodologie</h1>
@@ -112,14 +120,14 @@
         <li>Les données DVF ont un délai de publication de plusieurs mois.</li>
         <li>Les biens atypiques (lofts, hôtels particuliers, rez-de-jardin…) peuvent être mal représentés.</li>
         <li>Les ventes entre proches (donations, successions) peuvent biaiser les prix.</li>
-        <li>Les biens situés dans des zones avec peu de transactions peuvent manquer de références comparables.</li>
+        <li>La couverture actuelle est limitée à <strong>Paris intramuros (75)</strong>.</li>
       </ul>
     </div>
 
   </div>
 
   <footer>
-    Estimatiz — Données <a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/" target="_blank" rel="noopener">DVF · data.gouv.fr</a> &nbsp;|&nbsp; France 2014–2025
+    Estimatiz — Données <a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/" target="_blank" rel="noopener">DVF · data.gouv.fr</a> &nbsp;|&nbsp; Paris 2014–2025
   </footer>
 
 </body>

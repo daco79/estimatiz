@@ -5,12 +5,20 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Contact – Estimatiz</title>
+  <!-- SEO enhancements -->
+  <meta name="description" content="Contactez l'équipe Estimatiz pour signaler une adresse introuvable, une estimation incohérente, un bug ou une suggestion." />
+  <link rel="canonical" href="https://www.estimatiz.fr/contact.php" />
+  <!-- Open Graph tags -->
+  <meta property="og:title" content="Contact – Estimatiz" />
+  <meta property="og:description" content="Contactez l'équipe Estimatiz pour signaler une adresse introuvable, une estimation incohérente, un bug ou une suggestion." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.estimatiz.fr/contact.php" />
+  <meta property="og:locale" content="fr_FR" />
   <link rel="stylesheet" href="assets/css/site.css" />
   <?php include 'includes/content-style.php'; ?>
 </head>
 <body>
 <?php include 'includes/nav.php'; ?>
-
 
   <div class="page-hero">
     <h1>Nous contacter</h1>
@@ -18,9 +26,7 @@
   </div>
 
   <div class="content">
-
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:32px; align-items:start;">
-
       <!-- Formulaire -->
       <div>
         <div class="c-form" id="contactForm">
@@ -54,7 +60,6 @@
           </div>
         </div>
       </div>
-
       <!-- Infos -->
       <div>
         <div class="c-section" style="margin-bottom:24px;">
@@ -71,44 +76,35 @@
           Nous répondons généralement sous 48 heures ouvrées.
         </div>
       </div>
-
     </div>
-
   </div>
-
   <footer>
-    Estimatiz — Données <a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/" target="_blank" rel="noopener">DVF · data.gouv.fr</a> &nbsp;|&nbsp; France 2014–2025
+    Estimatiz — Données <a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/" target="_blank" rel="noopener">DVF · data.gouv.fr</a> &nbsp;|&nbsp; Paris 2014–2025
   </footer>
-
   <script>
   document.getElementById('btnSend').addEventListener('click', function() {
     const email   = document.getElementById('femail').value.trim();
     const sujet   = document.getElementById('fsujet').value;
     const message = document.getElementById('fmessage').value.trim();
-
     if (!email || !message || !sujet) {
       alert('Merci de remplir au minimum votre email, le sujet et le message.');
       return;
     }
-
     // Fallback mailto (à remplacer par un vrai backend si disponible)
     const fn    = document.getElementById('fname').value.trim();
     const ln    = document.getElementById('lname').value.trim();
     const nom   = [fn, ln].filter(Boolean).join(' ') || 'Visiteur';
     const corps = encodeURIComponent(`De : ${nom} <${email}>\nSujet : ${sujet}\n\n${message}`);
     window.location.href = `mailto:contact@estimatiz.fr?subject=${encodeURIComponent('[Estimatiz] ' + sujet)}&body=${corps}`;
-
     document.getElementById('formSuccess').style.display = 'block';
     document.getElementById('btnSend').disabled = true;
     document.getElementById('btnSend').style.opacity = '.6';
   });
   </script>
-
   <style>
     @media(max-width:700px){
       .content > div[style*="grid"]{ grid-template-columns:1fr !important; }
     }
   </style>
-
 </body>
 </html>

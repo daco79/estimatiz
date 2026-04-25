@@ -5,6 +5,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Estimatiz – Estimation immobilière basée sur les ventes réelles</title>
+  <!-- SEO enhancements -->
+  <meta name="description" content="Obtenez gratuitement l’estimation de votre bien immobilier grâce aux données DVF et aux ventes réelles. Outil transparent et gratuit." />
+  <link rel="canonical" href="https://www.estimatiz.fr/" />
+  <!-- Open Graph tags -->
+  <meta property="og:title" content="Estimatiz – Estimation immobilière basée sur les ventes réelles" />
+  <meta property="og:description" content="Obtenez gratuitement l’estimation de votre bien immobilier grâce aux données DVF et aux ventes réelles. Outil transparent et gratuit." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.estimatiz.fr/" />
+  <meta property="og:locale" content="fr_FR" />
   <link rel="stylesheet" href="assets/css/site.css" />
   <style>
     :root{ --c1:#1E3A8A; --c2:#10B981; --c3:#111827; --c4:#F3F4F6; }
@@ -98,7 +107,7 @@
     <p>Fondé sur les ventes officielles DVF — des données publiques, objectives et vérifiables. Pas d'estimation à l'aveugle.</p>
     <div class="search-card">
       <div class="searchBox">
-        <input id="addressInput" type="text" placeholder="Ex : 12 rue de Rivoli, Paris  ou  cours Victor Hugo, Bordeaux" autocomplete="off" />
+        <input id="addressInput" type="text" placeholder="Ex : 12 rue de Rivoli, Paris  ou  rue de Rivoli, Paris" autocomplete="off" />
         <div id="suggestions" class="suggestions"></div>
         <button type="button" id="btnContinuer" disabled>Estimer cette adresse &rarr;</button>
       </div>
@@ -112,7 +121,7 @@
         <div class="tip">
           <strong>🏘️ Rue entière</strong>
           Nom de rue + ville (sans numéro)<br>
-          <span class="ex">cours Victor Hugo, Bordeaux</span><br>
+          <span class="ex">rue de Rivoli, Paris</span><br>
           → échantillon plus large, plus de références
         </div>
       </div>
@@ -124,9 +133,9 @@
   <!-- Stats -->
   <div class="stats-bar">
     <div class="stats-inner">
-      <div><div class="stat-val">13 millions</div><div class="stat-lbl">ventes analysées</div></div>
+      <div><div class="stat-val">423 000</div><div class="stat-lbl">ventes analysées</div></div>
       <div><div class="stat-val">2014–2025</div><div class="stat-lbl">données DVF couvertes</div></div>
-      <div><div class="stat-val">France</div><div class="stat-lbl">couverture nationale</div></div>
+      <div><div class="stat-val">20</div><div class="stat-lbl">arrondissements parisiens</div></div>
       <div><div class="stat-val">100%</div><div class="stat-lbl">données officielles</div></div>
     </div>
   </div>
@@ -188,7 +197,7 @@
 
   <!-- Footer -->
   <footer>
-    Estimatiz — Données <a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/" target="_blank" rel="noopener">DVF · data.gouv.fr</a> &nbsp;|&nbsp; France 2014–2025
+    Estimatiz — Données <a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/" target="_blank" rel="noopener">DVF · data.gouv.fr</a> &nbsp;|&nbsp; Paris 2014–2025
   </footer>
 
   <script src="assets/js/utils.js"></script>
