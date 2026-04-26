@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>À propos – Estimatiz</title>
+  <title>À propos – Estimatiz, estimation immobilière en ligne gratuite</title>
   <!-- SEO enhancements -->
-  <meta name="description" content="Découvrez qui se cache derrière Estimatiz, ses valeurs et sa mission. Un outil transparent pour rendre l’estimation immobilière accessible à tous." />
+  <meta name="description" content="Estimatiz est un outil d’estimation immobilière en ligne gratuit. Estimez votre appartement ou maison à partir des ventes DVF officielles. Transparent, sans agence, sans inscription." />
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png" />
@@ -33,8 +33,9 @@
 
     <div class="c-section">
       <h2>Le projet</h2>
-      <p>Estimatiz est né d'un constat simple : <strong>les données immobilières existent, elles sont publiques, mais elles sont difficiles d'accès</strong>. Les fichiers DVF publiés par l'État contiennent des centaines de milliers de ventes réelles, mais leur exploitation nécessite des compétences techniques que la plupart des particuliers n't ont pas.</p>
-      <p>L'objectif d'Estimatiz est de rendre ces données lisibles et utiles : pas d'algorithme boîte noire, pas d'estimation venue de nulle part — juste les ventes réelles, filtrées et présentées clairement.</p>
+      <p>Estimatiz est né d'un constat simple : <strong>les données immobilières existent, elles sont publiques, mais elles sont difficiles d'accès</strong>. Les fichiers DVF publiés par l'État contiennent des millions de ventes réelles, mais leur exploitation nécessite des compétences techniques que la plupart des particuliers n'ont pas.</p>
+      <p>L'objectif d'Estimatiz est de proposer une <strong>estimation immobilière en ligne</strong>, gratuite et transparente, accessible à tous. Que vous souhaitiez <strong>estimer votre appartement</strong>, connaître la valeur de votre maison avant une vente, ou simplement comprendre les prix du marché dans votre rue, Estimatiz vous donne une réponse fondée sur les <strong>ventes immobilières réelles</strong> de votre secteur.</p>
+      <p>Pas d'algorithme boîte noire, pas d'<strong>estimation en ligne</strong> venue de nulle part — juste les transactions réelles, filtrées statistiquement et présentées clairement. <strong>Estimer son bien immobilier</strong> ne devrait pas nécessiter de passer par une agence ou de payer un expert : les données existent, Estimatiz les rend lisibles.</p>
     </div>
 
     <div class="c-section">
