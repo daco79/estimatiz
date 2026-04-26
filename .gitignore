@@ -3,4 +3,9 @@ config.o2switch.php
 test_connexion.php
 .cache/
 _base/*.csv
+.DS_Store
+rapports/*.html
+rapports/automatique/**/*.html
+generate_results.py.log
+rapports_dept*.txt
 

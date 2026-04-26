@@ -150,6 +150,40 @@ $html = <<<HTML
   <link rel="icon" type="image/x-icon" href="/favicon.ico"/>
   <link rel="stylesheet" href="{$basePath}/assets/css/site.css"/>
   <style>
+    /* ── Base ── */
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;color:#111827}
+    /* ── Nav ── */
+    .sitenav{background:#fff;border-bottom:1px solid #e5e7eb;position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+    .sitenav-inner{max-width:1100px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .sitenav-logo{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:inherit;flex-shrink:0}
+    .sitenav-logo-icon{width:38px;height:38px;flex-shrink:0}
+    .sitenav-logo-text{display:flex;flex-direction:column;line-height:1.2}
+    .sitenav-logo-name{font-size:18px;font-weight:800;color:#1E3A8A}
+    .sitenav-logo-tag{font-size:10px;color:#6B7280;letter-spacing:.03em}
+    .sitenav-logo:hover .sitenav-logo-name{color:#1e40af}
+    .sitenav-links{display:flex;align-items:center;gap:2px;list-style:none;margin:0;padding:0}
+    .sitenav-links a{display:inline-block;padding:6px 11px;font-size:13px;font-weight:600;color:#374151;text-decoration:none;border-radius:8px;white-space:nowrap}
+    .sitenav-links a:hover{background:#f3f4f6;color:#111827}
+    .sitenav-cta{background:#1E3A8A!important;color:#fff!important;border-radius:10px!important;padding:7px 14px!important}
+    .sitenav-cta:hover{background:#1e40af!important}
+    @media(max-width:768px){.sitenav-links{display:none}.sitenav-inner{padding:0 16px}}
+    /* ── Footer ── */
+    .site-footer{background:#111827;color:rgba(255,255,255,.7);padding:48px 24px 20px;font-size:14px;margin-top:auto}
+    .footer-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:32px;padding-bottom:32px;border-bottom:1px solid rgba(255,255,255,.1)}
+    .footer-brand{font-size:18px;font-weight:800;color:#fff;margin-bottom:8px}
+    .footer-tag{font-size:13px;color:rgba(255,255,255,.6);line-height:1.6;margin:0}
+    .footer-col h4{font-size:13px;font-weight:700;color:#fff;margin:0 0 12px;text-transform:uppercase;letter-spacing:.04em}
+    .footer-col ul{list-style:none;margin:0;padding:0}
+    .footer-col li{margin-bottom:8px}
+    .footer-col a{color:rgba(255,255,255,.7);text-decoration:none;font-size:13px;transition:color .15s}
+    .footer-col a:hover{color:#10B981}
+    .footer-bottom{max-width:1100px;margin:0 auto;padding-top:16px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:rgba(255,255,255,.5);flex-wrap:wrap;gap:8px}
+    .footer-bottom a{color:rgba(255,255,255,.7)}
+    .footer-bottom a:hover{color:#fff}
+    @media(max-width:768px){.footer-inner{grid-template-columns:1fr 1fr;gap:24px}.footer-bottom{flex-direction:column;text-align:center}}
+    @media(max-width:480px){.footer-inner{grid-template-columns:1fr}}
+    /* ── Page ── */
     body { background: #F3F4F6; }
     .wrap { max-width: 980px; margin: 0 auto; padding: 28px 20px 0; }
     /* ── Bandeau rapport ── */
@@ -239,7 +273,7 @@ $html = <<<HTML
   <nav class="sitenav" role="navigation" aria-label="Navigation principale">
     <div class="sitenav-inner">
       <a class="sitenav-logo" href="{$siteUrl}" title="Estimatiz — Accueil">
-        <svg class="sitenav-logo-icon" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <svg class="sitenav-logo-icon" width="38" height="38" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
           <path d="M60 10 L20 46 V110 H100 V46 Z" fill="none" stroke="#1E3A8A" stroke-width="7" stroke-linejoin="round"/>
           <rect x="52" y="68" width="16" height="42" fill="#10B981" rx="3"/>
           <rect x="28" y="76" width="13" height="34" fill="#1E3A8A" rx="3"/>

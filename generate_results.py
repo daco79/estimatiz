@@ -1,228 +1,303 @@
 #!/usr/bin/env python3
 """
-generate_results.py — Générateur de pages statiques Estimatiz
-Génère des pages HTML par adresse à partir de results.php (rendu PHP local).
+generate_results.py — Générateur de rapports SEO Estimatiz
+Interroge la base DVF, calcule les estimations et appelle api/save-rapport-seo.php.
 
-Prérequis:
-  pip3 install pymysql
-
-Usage:
-  python3 generate_results.py --dept 75
-  python3 generate_results.py --dept 75 --year 2025 --street-only
-  python3 generate_results.py --dept 75 --output /var/www/static
-
-Options:
-  --dept       Code département (ex: 75, 69, 13)  [REQUIS]
-  --year       Année des mutations (défaut: 2025)
-  --base-url   URL du serveur PHP local (défaut: http://localhost/estimatiz)
-  --output     Répertoire de sortie (défaut: ./static)
-  --delay      Délai entre requêtes en secondes (défaut: 0.05)
-  --street-only  Génère uniquement les pages de rue (pas par numéro)
-  --limit      Limite le nombre d'adresses traitées (pour tests)
+Usage :
+  python generate_results.py --voie "RUE VOLTAIRE" --commune "Paris"
+  python generate_results.py --dept 75 --min-trans 10
 """
 
 import argparse
 import os
-import re
 import sys
-import time
-import unicodedata
-import urllib.parse
-import urllib.request
-import urllib.error
+import mysql.connector
+import numpy as np
+import requests
+from datetime import datetime, date
+from xml.etree import ElementTree as ET
 
-try:
-    import pymysql
-    import pymysql.cursors
-    HAS_PYMYSQL = True
-except ImportError:
-    HAS_PYMYSQL = False
+# ── Configuration ────────────────────────────────────────────────────────────
+DB_HOST     = 'localhost'
+DB_NAME     = 'DVF_France'
+DB_USER     = 'root'
+DB_PASSWORD = ''
+DB_TABLE    = 'dvf_france'
 
-# ── Configuration DB locale (XAMPP) ──────────────────────────────────────────
-DB_CONFIG = {
-    'host':     'localhost',
-    'user':     'root',
-    'password': '',
-    'database': 'DVF_France',
-    'charset':  'utf8mb4',
-}
+API_URL      = 'http://localhost/estimatiz/api/save-rapport-seo'
+PROD_BASE    = 'https://www.estimatiz.fr'
+LOCAL_PREFIX = 'http://localhost/estimatiz'
+MIN_TRANS    = 10    # transactions minimum après filtrage IQR
+MAX_ROWS     = 25    # lignes affichées dans le tableau du rapport
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
+SITEMAP_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sitemap-rapports.xml')
+SITEMAP_NS   = 'http://www.sitemaps.org/schemas/sitemap/0.9'
 
-def slugify(text: str) -> str:
-    """'RUE VOLTAIRE' → 'rue-voltaire'"""
-    text = text.lower().strip()
-    text = unicodedata.normalize('NFD', text)
-    text = ''.join(c for c in text if unicodedata.category(c) != 'Mn')
-    text = re.sub(r'[^a-z0-9]+', '-', text).strip('-')
-    return text or 'adresse'
+# ── Sitemap ──────────────────────────────────────────────────────────────────
+def to_prod_url(local_url: str) -> str:
+    if local_url.startswith(LOCAL_PREFIX):
+        return PROD_BASE + local_url[len(LOCAL_PREFIX):]
+    return local_url
 
+def update_sitemap(new_urls: list) -> None:
+    ns = SITEMAP_NS
+    ET.register_namespace('', ns)
 
-def fetch_page(url: str, retries: int = 3) -> str:
-    for attempt in range(retries):
+    existing_locs: set[str] = set()
+    if os.path.exists(SITEMAP_FILE):
         try:
-            with urllib.request.urlopen(url, timeout=30) as resp:
-                return resp.read().decode('utf-8', errors='replace')
-        except urllib.error.HTTPError as e:
-            if e.code == 302:
-                # Redirection → adresse invalide, on ignore
-                raise ValueError(f"Redirect (adresse invalide?): {url}")
-            raise
-        except Exception as e:
-            if attempt < retries - 1:
-                time.sleep(1)
-            else:
-                raise
+            tree = ET.parse(SITEMAP_FILE)
+            root = tree.getroot()
+            for url_el in root.findall(f'{{{ns}}}url'):
+                loc = url_el.find(f'{{{ns}}}loc')
+                if loc is not None and loc.text:
+                    existing_locs.add(loc.text)
+        except ET.ParseError:
+            root = ET.Element('urlset')
+            root.set('xmlns', ns)
+            tree = ET.ElementTree(root)
+    else:
+        root = ET.Element('urlset')
+        root.set('xmlns', ns)
+        tree = ET.ElementTree(root)
 
+    today = datetime.now().strftime('%Y-%m-%d')
+    added = 0
+    for local_url in new_urls:
+        prod_url = to_prod_url(local_url)
+        if prod_url not in existing_locs:
+            url_el = ET.SubElement(root, 'url')
+            ET.SubElement(url_el, 'loc').text        = prod_url
+            ET.SubElement(url_el, 'lastmod').text    = today
+            ET.SubElement(url_el, 'changefreq').text = 'monthly'
+            ET.SubElement(url_el, 'priority').text   = '0.7'
+            existing_locs.add(prod_url)
+            added += 1
 
-def save_page(url: str, out_path: str, delay: float, counters: dict) -> None:
-    try:
-        html = fetch_page(url)
-        # Ne sauvegarder que les pages avec des résultats (pas les pages vides)
-        if 'Aucune vente' in html or 'aucune mutation' in html.lower():
-            counters['empty'] += 1
-            return
-        os.makedirs(os.path.dirname(out_path), exist_ok=True)
-        with open(out_path, 'w', encoding='utf-8') as f:
-            f.write(html)
-        counters['ok'] += 1
-        if counters['ok'] % 50 == 0:
-            print(f"  … {counters['ok']} pages générées", flush=True)
-    except ValueError:
-        counters['skip'] += 1
-    except Exception as e:
-        counters['err'] += 1
-        print(f"  [ERR] {out_path}: {e}", file=sys.stderr)
-    finally:
-        time.sleep(delay)
+    if added > 0:
+        ET.indent(tree, space='  ')
+        tree.write(SITEMAP_FILE, encoding='UTF-8', xml_declaration=True)
+        print(f"  → sitemap-rapports.xml mis à jour : +{added} URL (total {len(existing_locs)})")
 
-
-# ── Main ──────────────────────────────────────────────────────────────────────
-
-def main():
-    parser = argparse.ArgumentParser(
-        description='Générateur de pages statiques Estimatiz',
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=__doc__,
+# ── Connexion DB ─────────────────────────────────────────────────────────────
+def get_db():
+    return mysql.connector.connect(
+        host=DB_HOST, database=DB_NAME,
+        user=DB_USER, password=DB_PASSWORD,
+        charset='utf8mb4'
     )
-    parser.add_argument('--dept',        required=True,  help='Code département (ex: 75)')
-    parser.add_argument('--year',        type=int, default=2025, help='Année (défaut: 2025)')
-    parser.add_argument('--base-url',    default='http://localhost/estimatiz',
-                        help='URL base du serveur PHP local')
-    parser.add_argument('--output',      default='./static', help='Répertoire de sortie')
-    parser.add_argument('--delay',       type=float, default=0.05,
-                        help='Délai entre requêtes (secondes)')
-    parser.add_argument('--street-only', action='store_true',
-                        help='Pages de rue uniquement (pas par numéro)')
-    parser.add_argument('--limit',       type=int, default=0,
-                        help='Limite le nombre d\'adresses (0 = illimité, pour tests)')
-    args = parser.parse_args()
 
-    if not HAS_PYMYSQL:
-        print("[ERREUR] pymysql n'est pas installé. Lancez : pip3 install pymysql")
-        sys.exit(1)
+# ── Requête transactions ─────────────────────────────────────────────────────
+def fetch_transactions(cursor, voie: str, commune_prefix: str) -> list:
+    sql = """
+        SELECT
+            TRIM(CONCAT(
+                COALESCE(adresse_numero, ''), ' ',
+                COALESCE(adresse_suffixe, ''), ' ',
+                adresse_nom_voie, ', ', nom_commune
+            )) AS adresse,
+            valeur_fonciere,
+            COALESCE(lot1_surface_carrez, surface_reelle_bati) AS surface,
+            nombre_pieces_principales AS nb_pieces,
+            date_mutation,
+            adresse_code_voie,
+            code_postal,
+            nom_commune
+        FROM dvf_france
+        WHERE adresse_nom_voie = %s
+          AND nom_commune LIKE %s
+          AND type_local IN ('Appartement', 'Maison')
+          AND valeur_fonciere >= 10000
+          AND COALESCE(lot1_surface_carrez, surface_reelle_bati) > 0
+        ORDER BY date_mutation DESC
+    """
+    cursor.execute(sql, (voie.upper(), commune_prefix + '%'))
+    return cursor.fetchall()
 
-    dept     = args.dept.strip()
-    year     = args.year
-    base_url = args.base_url.rstrip('/')
-    out_root = args.output
+def fetch_streets_by_dept(cursor, dept: str, min_trans: int) -> list:
+    sql = """
+        SELECT adresse_nom_voie, nom_commune, code_postal,
+               COUNT(*) AS n
+        FROM dvf_france
+        WHERE code_departement = %s
+          AND type_local IN ('Appartement', 'Maison')
+          AND valeur_fonciere >= 10000
+          AND COALESCE(lot1_surface_carrez, surface_reelle_bati) > 0
+          AND adresse_nom_voie IS NOT NULL
+        GROUP BY adresse_nom_voie, nom_commune, code_postal
+        HAVING COUNT(*) >= %s
+        ORDER BY n DESC
+    """
+    cursor.execute(sql, (dept, min_trans))
+    return cursor.fetchall()
 
-    # ── Connexion DB ──────────────────────────────────────────────────────────
-    print(f"[DB] Connexion à {DB_CONFIG['database']}@{DB_CONFIG['host']}…")
-    try:
-        conn = pymysql.connect(
-            **DB_CONFIG,
-            cursorclass=pymysql.cursors.DictCursor,
-        )
-    except Exception as e:
-        print(f"[ERREUR] Connexion DB impossible: {e}")
-        sys.exit(1)
+# ── Calculs statistiques ─────────────────────────────────────────────────────
+def add_prix_m2(rows: list) -> list:
+    result = []
+    for r in rows:
+        surf = float(r['surface']) if r['surface'] else 0
+        val  = float(r['valeur_fonciere']) if r['valeur_fonciere'] else 0
+        if surf > 0 and val > 0:
+            r['prix_m2'] = round(val / surf, 2)
+            result.append(r)
+    return result
 
-    # ── Requête des adresses distinctes ──────────────────────────────────────
-    print(f"[DB] Récupération des adresses, dept={dept}, année={year}…")
-    with conn.cursor() as cur:
-        sql = """
-            SELECT DISTINCT
-                adresse_code_voie   AS code_voie,
-                code_postal         AS cp,
-                nom_commune         AS commune,
-                adresse_nom_voie    AS voie,
-                adresse_numero      AS no_voie
-            FROM dvf_france
-            WHERE code_postal LIKE %s
-              AND YEAR(date_mutation) = %s
-              AND adresse_code_voie IS NOT NULL
-              AND adresse_nom_voie  IS NOT NULL
-            ORDER BY code_postal, adresse_nom_voie, adresse_numero
-        """
-        cur.execute(sql, (dept + '%', year))
-        rows = cur.fetchall()
-    conn.close()
+def filter_iqr(rows: list, k: float = 1.5) -> list:
+    if len(rows) < 4:
+        return rows
+    pm2 = [r['prix_m2'] for r in rows]
+    q1, q3 = np.percentile(pm2, [25, 75])
+    iqr = q3 - q1
+    return [r for r in rows if q1 - k * iqr <= r['prix_m2'] <= q3 + k * iqr]
 
-    total = len(rows)
-    if args.limit:
-        rows = rows[:args.limit]
-    print(f"[DB] {total} adresses trouvées" + (f" (limité à {args.limit})" if args.limit else "") + ".")
+def compute_estimation(rows: list) -> dict:
+    pm2 = [r['prix_m2'] for r in rows]
+    n = len(pm2)
+    p20 = float(np.percentile(pm2, 20))
+    p50 = float(np.percentile(pm2, 50))
+    p80 = float(np.percentile(pm2, 80))
+    conf = 85 if n >= 30 else (65 if n >= 15 else 40)
+    return {
+        'p20': round(p20),
+        'p50': round(p50),
+        'p80': round(p80),
+        'conf': conf,
+        'count': n,
+    }
 
-    # ── Génération des pages ──────────────────────────────────────────────────
-    counters = {'ok': 0, 'err': 0, 'empty': 0, 'skip': 0}
-    streets_done: set = set()
+# ── Construction du payload ──────────────────────────────────────────────────
+def build_payload(voie: str, rows: list, est: dict) -> dict:
+    first     = rows[0]
+    cp        = str(first['code_postal']) if first['code_postal'] else ''
+    commune   = str(first['nom_commune']) if first['nom_commune'] else ''
+    code_voie = str(first['adresse_code_voie']) if first['adresse_code_voie'] else ''
+    label     = f"{voie.title()}, {commune}"
 
-    print(f"[GEN] Génération vers {os.path.abspath(out_root)} …\n")
+    payload_rows = []
+    for r in rows[:MAX_ROWS]:
+        dt = r['date_mutation']
+        date_str = dt.strftime('%Y-%m-%d') if isinstance(dt, (datetime, date)) else str(dt)
+        payload_rows.append({
+            'adresse':         str(r['adresse']).strip(),
+            'valeur_fonciere': float(r['valeur_fonciere']),
+            'surface':         float(r['surface']),
+            'prix_m2':         r['prix_m2'],
+            'nb_pieces':       int(r['nb_pieces']) if r['nb_pieces'] else None,
+            'date_mutation':   date_str,
+        })
 
-    for row in rows:
-        code_voie = (row['code_voie'] or '').strip()
-        cp        = (row['cp']        or '').strip()
-        commune   = (row['commune']   or '').strip()
-        voie      = (row['voie']      or '').strip()
-        no_voie   = (row['no_voie']   or '').strip()
-
-        if not (code_voie and cp and commune and voie):
-            continue
-
-        street_slug = slugify(voie)
-        street_key  = (code_voie, cp)
-
-        # ── Page de rue (une fois par rue) ───────────────────────────────────
-        if street_key not in streets_done:
-            streets_done.add(street_key)
-            params = urllib.parse.urlencode({
-                'code_voie': code_voie,
-                'commune':   commune,
-                'cp':        cp,
-                'voie':      voie,
-                'year':      year,
-            })
-            url      = f"{base_url}/results?{params}"
-            out_path = os.path.join(out_root, str(year), cp, street_slug, 'index.html')
-            save_page(url, out_path, args.delay, counters)
-
-        # ── Page par numéro ───────────────────────────────────────────────────
-        if args.street_only or not no_voie:
-            continue
-
-        no_slug  = slugify(no_voie) or no_voie
-        params   = urllib.parse.urlencode({
-            'code_voie': code_voie,
-            'commune':   commune,
+    return {
+        'label':      label,
+        'surface':    None,
+        'pieces':     None,
+        'surfaceMin': None,
+        'surfaceMax': None,
+        'suggestion': {
             'cp':        cp,
             'voie':      voie,
-            'no_voie':   no_voie,
-            'year':      year,
-        })
-        url      = f"{base_url}/results?{params}"
-        out_path = os.path.join(out_root, str(year), cp, street_slug, no_slug, 'index.html')
-        save_page(url, out_path, args.delay, counters)
+            'commune':   commune,
+            'code_voie': code_voie,
+        },
+        'estimation': est,
+        'rows':       payload_rows,
+    }
 
-    # ── Résumé ────────────────────────────────────────────────────────────────
-    print(f"\n{'─'*50}")
-    print(f"[OK]    Pages sauvegardées : {counters['ok']}")
-    print(f"[VIDE]  Pages sans résultat: {counters['empty']}")
-    print(f"[SKIP]  Redirections ignorées: {counters['skip']}")
-    print(f"[ERR]   Erreurs            : {counters['err']}")
-    print(f"[OUT]   {os.path.abspath(out_root)}/")
-    print(f"{'─'*50}")
+# ── Préfixe commune ──────────────────────────────────────────────────────────
+def commune_prefix(commune: str) -> str:
+    c = commune.strip().lower()
+    if c.startswith('paris'):      return 'Paris'
+    if c.startswith('lyon'):       return 'Lyon'
+    if c.startswith('marseille'):  return 'Marseille'
+    return commune.strip()
 
+# ── Génération d'un rapport ──────────────────────────────────────────────────
+def generate_rapport(voie: str, commune: str) -> str | None:
+    prefix = commune_prefix(commune)
+    db     = get_db()
+    cursor = db.cursor(dictionary=True)
+    rows   = fetch_transactions(cursor, voie, prefix)
+    cursor.close()
+    db.close()
+
+    if not rows:
+        print(f"  ✗ Aucune transaction : {voie}, {commune}")
+        return None
+
+    rows = add_prix_m2(rows)
+    rows = filter_iqr(rows)
+
+    if len(rows) < MIN_TRANS:
+        print(f"  ✗ Moins de {MIN_TRANS} transactions après filtrage ({len(rows)}) : {voie}, {commune}")
+        return None
+
+    est     = compute_estimation(rows)
+    payload = build_payload(voie, rows, est)
+
+    try:
+        resp = requests.post(API_URL, json=payload, timeout=30)
+        resp.raise_for_status()
+        data = resp.json()
+    except Exception as e:
+        print(f"  ✗ Erreur HTTP : {e}")
+        return None
+
+    if not data.get('ok'):
+        print(f"  ✗ Erreur API : {data.get('error')}")
+        return None
+
+    url = data['url']
+    print(f"  ✓ {payload['label']}")
+    print(f"    {est['count']} ventes | P20={est['p20']} · P50={est['p50']} · P80={est['p80']} €/m² | confiance {est['conf']}%")
+    print(f"    → {url}")
+    update_sitemap([url])
+    return url
+
+# ── Génération par département ───────────────────────────────────────────────
+def generate_by_dept(dept: str, min_trans: int) -> None:
+    db      = get_db()
+    cursor  = db.cursor(dictionary=True)
+    streets = fetch_streets_by_dept(cursor, dept, min_trans)
+    cursor.close()
+    db.close()
+
+    print(f"\n  {len(streets)} rues éligibles dans le département {dept} (min {min_trans} transactions)\n")
+
+    urls = []
+    for i, s in enumerate(streets, 1):
+        print(f"  [{i}/{len(streets)}] {s['adresse_nom_voie']}, {s['nom_commune']} ({s['n']} ventes)")
+        url = generate_rapport(s['adresse_nom_voie'], s['nom_commune'])
+        if url:
+            urls.append(url)
+
+    print(f"\n  ✓ {len(urls)}/{len(streets)} rapports générés")
+
+# ── CLI ───────────────────────────────────────────────────────────────────────
+def main():
+    parser = argparse.ArgumentParser(
+        description='Générateur de rapports SEO Estimatiz',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Exemples :
+  python generate_results.py --voie "RUE VOLTAIRE" --commune "Paris"
+  python generate_results.py --dept 75 --min-trans 10
+  python generate_results.py --dept 69 --min-trans 15
+        """
+    )
+    parser.add_argument('--voie',      help='Nom de la voie  ex: "RUE VOLTAIRE"')
+    parser.add_argument('--commune',   help='Commune         ex: "Paris"')
+    parser.add_argument('--dept',      help='Code département ex: "75"')
+    parser.add_argument('--min-trans', type=int, default=MIN_TRANS,
+                        help=f'Transactions minimum (défaut : {MIN_TRANS})')
+    args = parser.parse_args()
+
+    if args.voie and args.commune:
+        print(f"\n  Génération : {args.voie.upper()}, {args.commune}\n")
+        generate_rapport(args.voie, args.commune)
+    elif args.dept:
+        generate_by_dept(args.dept, args.min_trans)
+    else:
+        parser.print_help()
+        sys.exit(1)
 
 if __name__ == '__main__':
     main()

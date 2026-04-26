@@ -31,14 +31,14 @@ zip -q -r "$ZIP_NAME" \
   mentions-legales.php confidentialite.php \
   config.php \
   favicon.ico \
-  .htaccess robots.txt sitemap.xml \
+  .htaccess robots.txt sitemap.xml sitemap-site.xml sitemap-rapports.xml \
   api/autocomplete.php api/surface.php api/mutations.php \
   api/prix-m2.php api/ventes.php api/export.php api/estimate.php \
-  api/save-rapport.php \
+  api/save-rapport.php api/save-rapport-seo.php \
   includes/ \
   lib/ \
   assets/ \
-  rapports/.htaccess \
+  rapports/.htaccess rapports/automatique/.htaccess \
   -x "*.DS_Store"
 
 if [ $? -ne 0 ]; then
