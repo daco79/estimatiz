@@ -64,6 +64,22 @@
     .btn-all{ background:#f3f4f6; color:#111827; border:1px solid #d1d5db; }
     .btn-none{ background:#f3f4f6; color:#111827; border:1px solid #d1d5db; }
     .btn-pdf{ background:var(--c2); color:#fff; font-size:15px; padding:12px 28px; box-shadow:0 3px 10px rgba(16,185,129,.3); }
+    /* Modal rapport */
+    .modal-overlay{ display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:100; align-items:center; justify-content:center; }
+    .modal-overlay.open{ display:flex; }
+    .modal{ background:#fff; border-radius:20px; padding:28px 24px; max-width:480px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,.2); }
+    .modal h3{ margin:0 0 6px; font-size:18px; color:var(--c1); }
+    .modal p{ margin:0 0 16px; font-size:13px; color:#6B7280; }
+    .modal-url{ display:flex; gap:8px; }
+    .modal-url input{ flex:1; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:13px; color:#111827; background:#f9fafb; }
+    .btn-copy{ padding:10px 16px; background:var(--c1); color:#fff; border:none; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; }
+    .btn-copy:hover{ background:#1e40af; }
+    .btn-copy.copied{ background:var(--c2); }
+    .modal-actions{ display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
+    .btn-open{ flex:1; padding:10px; background:#f3f4f6; color:#111827; border:1px solid #d1d5db; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer; text-align:center; text-decoration:none; display:inline-block; }
+    .btn-open:hover{ background:#e5e7eb; }
+    .btn-modal-close{ flex:1; padding:10px; background:#fff; color:#6B7280; border:1px solid #e5e7eb; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer; }
+    .modal-loading{ text-align:center; padding:8px 0; font-size:14px; color:#6B7280; }
     .btn-back{ background:#fff; color:var(--c1); border:1.5px solid var(--c1); font-size:13px; padding:9px 16px; display:inline-flex; align-items:center; gap:6px; text-decoration:none; border-radius:10px; font-weight:600; cursor:pointer; }
     .btn-back:hover{ background:#eff6ff; }
     /* Table */
@@ -184,7 +200,7 @@
       <div class="sub" id="pageSub"></div>
     </div>
     <div class="btn-pdf-wrap">
-      <button class="btn-pdf" id="btnGenPdf" disabled>Générer mon PDF</button>
+      <button class="btn-pdf" id="btnGenPdf" disabled>Générer le rapport</button>
     </div>
   </div>
   <div id="estBox" class="est-box" style="display:none">
@@ -221,6 +237,22 @@
       <div class="empty" id="emptyMsg" style="display:none">Aucune mutation trouvée pour ces critères.</div>
     </div>
   </div>
+  <!-- Modal rapport partageable -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <h3>Rapport généré ✓</h3>
+      <p>Copiez ce lien pour partager votre rapport :</p>
+      <div class="modal-url">
+        <input type="text" id="modalUrlInput" readonly />
+        <button class="btn-copy" id="btnCopy">Copier</button>
+      </div>
+      <div class="modal-actions">
+        <a class="btn-open" id="btnOpenRapport" href="#" target="_blank">Ouvrir le rapport</a>
+        <button class="btn-modal-close" id="btnModalClose">Fermer</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Pied de page visible uniquement à l'impression -->
   <div class="print-footer" id="printFooter">
     <span id="printFooterLeft"></span>
@@ -400,11 +432,60 @@
       updateSelInfo();
     });
     updateSelInfo();
-    /* ---- Génération PDF via window.print() ---- */
-    document.getElementById('btnGenPdf').addEventListener('click', () => {
-      if (!getSelectedRows().length) return;
-      window.print();
+    /* ---- Génération rapport partageable ---- */
+    const modalOverlay  = document.getElementById('modalOverlay');
+    const modalUrlInput = document.getElementById('modalUrlInput');
+    const btnCopy       = document.getElementById('btnCopy');
+    const btnOpen       = document.getElementById('btnOpenRapport');
+    const btnClose      = document.getElementById('btnModalClose');
+
+    document.getElementById('btnGenPdf').addEventListener('click', async () => {
+      const selected = getSelectedRows();
+      if (!selected.length) return;
+      const btn = document.getElementById('btnGenPdf');
+      btn.disabled = true;
+      btn.textContent = 'Génération…';
+      try {
+        const payload = {
+          label, surface, surfaceMin, surfaceMax, pieces,
+          suggestion,
+          estimation: window._currentEst,
+          rows: selected.map(r => ({
+            adresse:        r.adresse,
+            valeur_fonciere: r.valeur_fonciere,
+            surface:         r.surface,
+            prix_m2:         r.prix_m2,
+            nb_pieces:       r.nb_pieces,
+            date_mutation:   r.date_mutation,
+          })),
+        };
+        const res  = await fetch('api/save-rapport', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (!data.ok) throw new Error(data.error || 'Erreur serveur');
+        modalUrlInput.value = data.url;
+        btnOpen.href = data.url;
+        modalOverlay.classList.add('open');
+      } catch (e) {
+        alert('Erreur lors de la génération du rapport : ' + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Générer le rapport';
+      }
     });
+
+    btnCopy.addEventListener('click', () => {
+      navigator.clipboard.writeText(modalUrlInput.value).then(() => {
+        btnCopy.textContent = 'Copié !';
+        btnCopy.classList.add('copied');
+        setTimeout(() => { btnCopy.textContent = 'Copier'; btnCopy.classList.remove('copied'); }, 2000);
+      });
+    });
+    btnClose.addEventListener('click', () => modalOverlay.classList.remove('open'));
+    modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) modalOverlay.classList.remove('open'); });
   }
 </script>
 </body>
