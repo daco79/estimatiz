@@ -87,7 +87,7 @@ def get_db():
         charset='utf8mb4'
     )
 
-# ── Requête transactions ─────────────────────────────────────────────────────
+# ── Requêtes ─────────────────────────────────────────────────────────────────
 def fetch_transactions(cursor, voie: str, commune_prefix: str) -> list:
     sql = """
         SELECT
@@ -113,6 +113,21 @@ def fetch_transactions(cursor, voie: str, commune_prefix: str) -> list:
     """
     cursor.execute(sql, (voie.upper(), commune_prefix + '%'))
     return cursor.fetchall()
+
+def fetch_numbers_on_street(cursor, voie: str, commune_prefix: str) -> list:
+    sql = """
+        SELECT DISTINCT adresse_numero
+        FROM dvf_france
+        WHERE adresse_nom_voie = %s
+          AND nom_commune LIKE %s
+          AND type_local IN ('Appartement', 'Maison')
+          AND valeur_fonciere >= 10000
+          AND COALESCE(lot1_surface_carrez, surface_reelle_bati) > 0
+          AND adresse_numero IS NOT NULL AND adresse_numero != ''
+        ORDER BY CAST(adresse_numero AS UNSIGNED)
+    """
+    cursor.execute(sql, (voie.upper(), commune_prefix + '%'))
+    return [r['adresse_numero'] for r in cursor.fetchall()]
 
 def fetch_streets_by_dept(cursor, dept: str, min_trans: int) -> list:
     sql = """
@@ -166,12 +181,14 @@ def compute_estimation(rows: list) -> dict:
     }
 
 # ── Construction du payload ──────────────────────────────────────────────────
-def build_payload(voie: str, rows: list, est: dict) -> dict:
+def build_payload(voie: str, rows: list, est: dict, numero: str | None = None) -> dict:
     first     = rows[0]
     cp        = str(first['code_postal']) if first['code_postal'] else ''
     commune   = str(first['nom_commune']) if first['nom_commune'] else ''
     code_voie = str(first['adresse_code_voie']) if first['adresse_code_voie'] else ''
-    label     = f"{voie.title()}, {commune}"
+
+    num_prefix = f"{numero} " if numero else ''
+    label      = f"{num_prefix}{voie.title()}, {commune}"
 
     payload_rows = []
     for r in rows[:MAX_ROWS]:
@@ -197,6 +214,7 @@ def build_payload(voie: str, rows: list, est: dict) -> dict:
             'voie':      voie,
             'commune':   commune,
             'code_voie': code_voie,
+            'numero':    numero or '',
         },
         'estimation': est,
         'rows':       payload_rows,
@@ -210,47 +228,51 @@ def commune_prefix(commune: str) -> str:
     if c.startswith('marseille'):  return 'Marseille'
     return commune.strip()
 
-# ── Génération d'un rapport ──────────────────────────────────────────────────
-def generate_rapport(voie: str, commune: str) -> str | None:
+# ── Génération par rue (un rapport par numéro) ───────────────────────────────
+def generate_by_street(voie: str, commune: str) -> list[str]:
     prefix = commune_prefix(commune)
     db     = get_db()
     cursor = db.cursor(dictionary=True)
-    rows   = fetch_transactions(cursor, voie, prefix)
+    rows    = fetch_transactions(cursor, voie, prefix)
+    numbers = fetch_numbers_on_street(cursor, voie, prefix)
     cursor.close()
     db.close()
 
     if not rows:
         print(f"  ✗ Aucune transaction : {voie}, {commune}")
-        return None
+        return []
 
     rows = add_prix_m2(rows)
     rows = filter_iqr(rows)
 
     if len(rows) < MIN_TRANS:
         print(f"  ✗ Moins de {MIN_TRANS} transactions après filtrage ({len(rows)}) : {voie}, {commune}")
-        return None
+        return []
 
-    est     = compute_estimation(rows)
-    payload = build_payload(voie, rows, est)
+    est = compute_estimation(rows)
+    print(f"  {est['count']} ventes | P20={est['p20']} · P50={est['p50']} · P80={est['p80']} €/m² | confiance {est['conf']}% | {len(numbers)} numéros")
 
-    try:
-        resp = requests.post(API_URL, json=payload, timeout=30)
-        resp.raise_for_status()
-        data = resp.json()
-    except Exception as e:
-        print(f"  ✗ Erreur HTTP : {e}")
-        return None
+    urls = []
+    for numero in numbers:
+        payload = build_payload(voie, rows, est, numero)
+        try:
+            resp = requests.post(API_URL, json=payload, timeout=30)
+            resp.raise_for_status()
+            data = resp.json()
+        except Exception as e:
+            print(f"    ✗ [{numero}] Erreur HTTP : {e}")
+            continue
+        if not data.get('ok'):
+            print(f"    ✗ [{numero}] Erreur API : {data.get('error')}")
+            continue
+        url = data['url']
+        urls.append(url)
+        print(f"    ✓ {numero} {voie.title()}, {commune} → {url}")
 
-    if not data.get('ok'):
-        print(f"  ✗ Erreur API : {data.get('error')}")
-        return None
+    if urls:
+        update_sitemap(urls)
 
-    url = data['url']
-    print(f"  ✓ {payload['label']}")
-    print(f"    {est['count']} ventes | P20={est['p20']} · P50={est['p50']} · P80={est['p80']} €/m² | confiance {est['conf']}%")
-    print(f"    → {url}")
-    update_sitemap([url])
-    return url
+    return urls
 
 # ── Génération par département ───────────────────────────────────────────────
 def generate_by_dept(dept: str, min_trans: int) -> None:
@@ -262,14 +284,13 @@ def generate_by_dept(dept: str, min_trans: int) -> None:
 
     print(f"\n  {len(streets)} rues éligibles dans le département {dept} (min {min_trans} transactions)\n")
 
-    urls = []
+    total_urls = 0
     for i, s in enumerate(streets, 1):
         print(f"  [{i}/{len(streets)}] {s['adresse_nom_voie']}, {s['nom_commune']} ({s['n']} ventes)")
-        url = generate_rapport(s['adresse_nom_voie'], s['nom_commune'])
-        if url:
-            urls.append(url)
+        urls = generate_by_street(s['adresse_nom_voie'], s['nom_commune'])
+        total_urls += len(urls)
 
-    print(f"\n  ✓ {len(urls)}/{len(streets)} rapports générés")
+    print(f"\n  ✓ {total_urls} rapports générés pour {len(streets)} rues")
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
 def main():
@@ -292,7 +313,8 @@ Exemples :
 
     if args.voie and args.commune:
         print(f"\n  Génération : {args.voie.upper()}, {args.commune}\n")
-        generate_rapport(args.voie, args.commune)
+        urls = generate_by_street(args.voie, args.commune)
+        print(f"\n  ✓ {len(urls)} rapports générés")
     elif args.dept:
         generate_by_dept(args.dept, args.min_trans)
     else:

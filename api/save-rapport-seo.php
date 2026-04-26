@@ -38,12 +38,20 @@ function seo_slugify(string $str): string {
     return trim($str, '-');
 }
 
-$cp   = preg_replace('/[^0-9]/', '', $suggestion['cp']   ?? '');
-$voie = seo_slugify($suggestion['voie'] ?? $label);
-$base = ($cp ? $cp . '-' : '') . ($voie ?: 'adresse');
-$base = substr($base, 0, 60);
-$hash = substr(md5($base . microtime(true) . rand()), 0, 6);
-$filename = $base . '-' . $hash . '.html';
+$cp     = preg_replace('/[^0-9]/', '', $suggestion['cp']     ?? '');
+$voie   = seo_slugify($suggestion['voie']   ?? $label);
+$numero = preg_replace('/[^0-9]/', '', $suggestion['numero'] ?? '');
+
+if ($numero) {
+    $base     = $numero . '-' . ($voie ?: 'adresse') . ($cp ? '-' . $cp : '');
+    $base     = substr($base, 0, 60);
+    $filename = $base . '.html';
+} else {
+    $base     = ($cp ? $cp . '-' : '') . ($voie ?: 'adresse');
+    $base     = substr($base, 0, 60);
+    $hash     = substr(md5($base . microtime(true) . rand()), 0, 6);
+    $filename = $base . '-' . $hash . '.html';
+}
 
 // ── Dossier de destination : rapports/automatique/{year}/ ──────────────────
 $year_      = (new DateTime())->format('Y');

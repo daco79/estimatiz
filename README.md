@@ -34,6 +34,8 @@ Utilisateur → /  →  /estimation  →  /results
 | `faq.php` | `/faq` | Questions fréquentes |
 | `a-propos.php` | `/a-propos` | À propos du projet |
 | `contact.php` | `/contact` | Formulaire de contact |
+| `mentions-legales.php` | `/mentions-legales` | Mentions légales |
+| `confidentialite.php` | `/confidentialite` | Politique de confidentialité |
 
 ---
 
@@ -133,6 +135,37 @@ Dernières ventes DVF avec pagination keyset (scroll infini).
 Chaque vente : `{ id, date, adresse, commune, cp, valeur, surface, surf_src, prix_m2, type, pieces }`
 
 **Pagination :** `WHERE (date_mutation < :c_date OR (date_mutation = :c_date2 AND id < :c_id))` — aucun OFFSET, performant sur 13M lignes.
+
+---
+
+### `api/save-rapport.php` — Rapport manuel
+
+Génère et sauvegarde une page HTML de rapport d'estimation à la demande de l'utilisateur (bouton "Générer le rapport" sur `/results`).
+
+- Sauvegarde dans `rapports/{hash}.html`
+- Template simple avec bouton "Imprimer / PDF"
+- CSS inline (nav + footer) — fonctionne en `file://` et via Apache
+
+**Payload JSON POST :**
+- `label`, `surface`, `pieces`, `surfaceMin`, `surfaceMax` — contexte de la recherche
+- `suggestion` — `{ cp, voie, commune, code_voie }`
+- `estimation` — `{ p20, p50, p80, conf, count }`
+- `rows[]` — jusqu'à 25 ventes de référence
+
+**Retourne :** `{ ok, url, filename }`
+
+---
+
+### `api/save-rapport-seo.php` — Rapport automatique SEO
+
+Génère des pages HTML statiques optimisées SEO dans `rapports/automatique/{année}/`. Appelé par `generate_results.py`.
+
+- Slug calculé depuis le code postal + rue + hash court (ex: `75011-rue-voltaire-ad9220.html`)
+- Template complet : H1, H2, JSON-LD (BreadcrumbList + Article + FAQPage), canonical, OG tags
+- CSS intégralement inline — fonctionne en `file://` et via Apache
+- Sections : bannière estimations P20/médiane/P80, tableau des ventes, analyse de marché, FAQ
+
+**Retourne :** `{ ok, url, path, filename }`
 
 ---
 
@@ -260,10 +293,57 @@ python3 build_dvf_voies.py
 - **JSON-LD `WebSite`** + `SearchAction` sur `index.php`
 - **JSON-LD `FAQPage`** sur `faq.php` (rich results Google)
 - **JSON-LD `BreadcrumbList`** sur `estimation`, `prix-m2`, `ventes`, `methodologie`, `donnees`
+- **JSON-LD `BreadcrumbList` + `Article` + `FAQPage`** sur chaque rapport automatique
 
 ### Sitemap et robots
-- `sitemap.xml` : 9 URLs propres + `<priority>` + `<changefreq>`
+- `sitemap.xml` : **sitemapindex** pointant vers deux sous-sitemaps
+  - `sitemap-site.xml` : 11 pages du site (priority 1.0 → 0.3)
+  - `sitemap-rapports.xml` : rapports automatiques, mis à jour automatiquement à chaque génération (priority 0.7, changefreq monthly)
 - `robots.txt` : bloque `/_Base/`, `/_Backup/`, `/.cache/`, `/lib/`, `/includes/`
+
+### Rapports automatiques SEO
+
+Génération en masse de pages HTML statiques par rue et commune, basées sur les données DVF.
+
+#### `generate_results.py`
+
+Script Python en ligne de commande. Interroge directement la base MySQL `DVF_France`, calcule les statistiques et appelle `api/save-rapport-seo.php`.
+
+**Dépendances :** `mysql-connector-python`, `numpy`, `requests`
+
+```bash
+# Une rue précise
+python3 generate_results.py --voie "RUE VOLTAIRE" --commune "Paris"
+
+# Toutes les rues éligibles d'un département
+python3 generate_results.py --dept 75 --min-trans 10
+python3 generate_results.py --dept 69 --min-trans 15
+```
+
+**Paramètres :**
+- `--voie` + `--commune` : génère un seul rapport
+- `--dept` : génère tous les rapports du département (rues avec au moins `--min-trans` ventes, défaut : 10)
+
+**Traitement par rapport :**
+1. Récupère toutes les transactions Appartement/Maison sur la rue
+2. Calcule le prix au m² par vente
+3. Filtre les valeurs aberrantes (méthode IQR, k=1.5)
+4. Calcule P20 / médiane / P80 + niveau de confiance (85% si ≥30 ventes, 65% si ≥15, 40% sinon)
+5. Poste le payload JSON à `api/save-rapport-seo.php`
+6. Ajoute l'URL prod dans `sitemap-rapports.xml`
+
+**Structure des fichiers générés :**
+```
+rapports/
+  automatique/
+    .htaccess          (RewriteEngine Off, Options -Indexes)
+    2026/
+      75011-rue-voltaire-ad9220.html
+      75011-rue-voltaire-2315a4.html
+      …
+```
+
+**Droits locaux (XAMPP) :** `chmod 777 rapports/automatique/` (Apache tourne en `daemon`). En production o2switch, `755` suffit.
 
 ---
 
