@@ -7,6 +7,9 @@
   <title>Contact – Estimatiz</title>
   <!-- SEO enhancements -->
   <meta name="description" content="Contactez l'équipe Estimatiz pour signaler une adresse introuvable, une estimation incohérente, un bug ou une suggestion." />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png" />
   <link rel="canonical" href="https://www.estimatiz.fr/contact" />
   <!-- Open Graph tags -->
   <meta property="og:title" content="Contact – Estimatiz" />

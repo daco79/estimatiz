@@ -35,6 +35,9 @@ $depts = [
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Dernières ventes immobilières – Estimatiz</title>
   <meta name="description" content="Consultez les dernières ventes immobilières en France (DVF 2014–2025). Filtrez par type de bien, département, nombre de pièces et surface." />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png" />
   <link rel="canonical" href="https://www.estimatiz.fr/ventes" />
   <meta property="og:title" content="Dernières ventes immobilières – Estimatiz" />
   <meta property="og:description" content="Consultez les dernières ventes immobilières en France (DVF 2014–2025). Filtrez par type de bien, département, nombre de pièces et surface." />

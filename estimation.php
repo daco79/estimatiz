@@ -4,9 +4,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Estimatiz – Estimer un bien</title>
+  <title>Estimer son appartement ou sa maison en ligne – Estimatiz</title>
   <!-- SEO enhancements -->
-  <meta name="description" content="Estimez votre bien immobilier en quelques clics en utilisant les ventes réelles et les données DVF. Ajustez la surface et les critères pour obtenir une estimation personnalisée." />
+  <meta name="description" content="Estimez votre appartement, maison ou studio en ligne gratuitement. Saisissez l'adresse et la surface pour obtenir une estimation immobilière basée sur les ventes DVF réelles de votre quartier." />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png" />
   <link rel="canonical" href="https://www.estimatiz.fr/estimation" />
   <!-- Open Graph tags -->
   <meta property="og:title" content="Estimatiz – Estimer un bien" />

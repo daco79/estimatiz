@@ -7,6 +7,9 @@
   <title>Méthodologie – Estimatiz</title>
   <!-- SEO enhancements -->
   <meta name="description" content="Apprenez la méthodologie d’Estimatiz : sources des données DVF, recherche des comparables, filtrage statistique, calcul des estimations et limites." />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png" />
   <link rel="canonical" href="https://www.estimatiz.fr/methodologie" />
   <!-- Open Graph tags -->
   <meta property="og:title" content="Méthodologie – Estimatiz" />

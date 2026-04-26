@@ -34,7 +34,10 @@ $depts = [
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <!-- SEO meta tags -->
-  <meta name="description" content="Consultez l’évolution des prix au m² dans les grandes villes et départements de France grâce aux ventes officielles DVF 2014–2025. Filtrez par ville, département, type de bien et période."/>
+  <meta name="description" content="Prix immobilier au m² par ville, département et rue en France. Consultez les prix des appartements et maisons issus des ventes DVF 2014–2025. Comparez et analysez le marché immobilier local."/>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png" />
   <link rel="canonical" href="https://www.estimatiz.fr/prix-m2"/>
   <meta property="og:locale" content="fr_FR"/>
   <meta property="og:type" content="website"/>
@@ -48,7 +51,7 @@ $depts = [
     {"@type":"ListItem","position":2,"name":"Prix au m²","item":"https://www.estimatiz.fr/prix-m2"}
   ]}
   </script>
-  <title>Prix au m² – Estimatiz</title>
+  <title>Prix immobilier au m² par ville et département – Estimatiz</title>
   <link rel="stylesheet" href="assets/css/site.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>

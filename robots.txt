@@ -5,5 +5,6 @@ Disallow: /_Backup/
 Disallow: /.cache/
 Disallow: /lib/
 Disallow: /includes/
+Disallow: /test_connexion.php
 Allow: /
 Sitemap: https://www.estimatiz.fr/sitemap.xml

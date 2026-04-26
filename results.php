@@ -7,6 +7,9 @@
   <title>Estimatiz – Résultats</title>
   <!-- SEO enhancements -->
   <meta name="description" content="Résultats d’estimation personnalisée du prix d’un bien immobilier selon les ventes DVF. Consultez les valeurs basse, médiane et haute, et les statistiques comparables." />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png" />
   <link rel="canonical" href="https://www.estimatiz.fr/results" />
   <!-- Open Graph tags -->
   <meta property="og:title" content="Estimatiz – Résultats" />

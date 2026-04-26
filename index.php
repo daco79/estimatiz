@@ -4,13 +4,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Estimatiz – Estimation immobilière basée sur les ventes réelles</title>
+  <title>Estimatiz – Estimation immobilière en ligne gratuite | Estimer son appartement</title>
   <!-- SEO enhancements -->
-  <meta name="description" content="Obtenez gratuitement l’estimation de votre bien immobilier grâce aux données DVF et aux ventes réelles. Outil transparent et gratuit." />
+  <meta name="description" content="Estimez votre appartement ou maison en ligne gratuitement. Estimation immobilière basée sur les ventes DVF officielles — prix au m², fourchette basse, médiane et haute pour toute la France." />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png" />
   <link rel="canonical" href="https://www.estimatiz.fr/" />
   <!-- Open Graph tags -->
-  <meta property="og:title" content="Estimatiz – Estimation immobilière basée sur les ventes réelles" />
-  <meta property="og:description" content="Obtenez gratuitement l’estimation de votre bien immobilier grâce aux données DVF et aux ventes réelles. Outil transparent et gratuit." />
+  <meta property="og:title" content="Estimatiz – Estimation immobilière en ligne gratuite" />
+  <meta property="og:description" content="Estimez votre appartement ou maison en ligne gratuitement. Basé sur les ventes DVF officielles — prix au m², fourchette basse, médiane et haute pour toute la France." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.estimatiz.fr/" />
   <meta property="og:locale" content="fr_FR" />
@@ -122,8 +125,8 @@
 
   <!-- Hero -->
   <section class="hero">
-    <h1>Estimez votre bien immobilier<br>au prix du marché réel</h1>
-    <p>Fondé sur les ventes officielles DVF — des données publiques, objectives et vérifiables. Pas d'estimation à l'aveugle.</p>
+    <h1>Estimation immobilière en ligne,<br>gratuite et basée sur les ventes réelles</h1>
+    <p>Estimez votre appartement ou votre maison en quelques secondes. Fondé sur les ventes DVF officielles — des données publiques, objectives et vérifiables.</p>
     <div class="search-card">
       <div class="searchBox">
         <input id="addressInput" type="text" placeholder="Ex : 12 rue de Rivoli, Paris  ou  rue de Rivoli, Paris" autocomplete="off" />
@@ -211,6 +214,25 @@
           <p class="step-desc">Visualisez les ventes comparables et votre estimation P20/médiane/P80. Exportez en PDF en un clic.</p>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- Bloc SEO -->
+  <section class="section">
+    <div style="max-width:800px;">
+      <h2 class="section-title">Quelle valeur pour votre appartement ou votre maison ?</h2>
+      <p style="font-size:15px;color:#374151;line-height:1.8;margin:16px 0;">
+        L'<strong>estimation immobilière en ligne</strong> permet à tout propriétaire ou acheteur de connaître la valeur d'un bien sans passer par une agence. Estimatiz calcule une <strong>estimation de votre bien</strong> à partir des <strong>ventes immobilières réelles</strong> enregistrées dans votre rue ou votre quartier — pas d'algorithme opaque, pas de données commerciales.
+      </p>
+      <p style="font-size:15px;color:#374151;line-height:1.8;margin:16px 0;">
+        Que vous souhaitiez <strong>estimer votre appartement</strong>, évaluer une maison avant une vente ou simplement suivre l'évolution des prix dans votre secteur, Estimatiz vous donne accès aux mêmes données que les professionnels de l'immobilier : les <strong>Demandes de Valeurs Foncières (DVF)</strong> publiées par l'État, issues des actes notariés.
+      </p>
+      <p style="font-size:15px;color:#374151;line-height:1.8;margin:16px 0;">
+        Pour chaque <strong>estimation en ligne</strong>, vous obtenez une fourchette basse, médiane et haute basée sur les transactions comparables, accompagnée d'un indice de confiance et de la liste des ventes utilisées. Idéal pour préparer une négociation, fixer un prix de vente ou vérifier une offre d'achat.
+      </p>
+      <p style="margin-top:24px;">
+        <a href="estimation" style="display:inline-block;background:#1E3A8A;color:#fff;padding:13px 28px;border-radius:12px;font-weight:700;text-decoration:none;font-size:15px;">Estimer mon bien gratuitement →</a>
+      </p>
     </div>
   </section>
 

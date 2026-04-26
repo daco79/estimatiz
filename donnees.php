@@ -7,6 +7,9 @@
   <title>Données utilisées – Estimatiz</title>
   <!-- SEO enhancements -->
   <meta name="description" content="Découvrez les données DVF utilisées par Estimatiz, leur composition, leur couverture et la façon dont elles sont traitées et mises à jour." />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png" />
   <link rel="canonical" href="https://www.estimatiz.fr/donnees" />
   <!-- Open Graph tags -->
   <meta property="og:title" content="Données utilisées – Estimatiz" />
