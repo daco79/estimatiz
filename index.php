@@ -4,28 +4,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Estimatiz – Estimation immobilière en ligne gratuite | Estimer son appartement</title>
-  <!-- SEO enhancements -->
-  <meta name="description" content="Estimez votre appartement ou maison en ligne gratuitement. Estimation immobilière basée sur les ventes DVF officielles — prix au m², fourchette basse, médiane et haute pour toute la France." />
+  <title>Estimation immobilière en ligne gratuite – Prix au m² DVF | Estimatiz</title>
+  <meta name="description" content="Estimez votre appartement ou maison gratuitement en 30 secondes. Estimation basée sur les ventes réelles DVF (DGFiP) — prix au m², fourchette basse, médiane et haute, France entière 2014–2025." />
+  <meta name="keywords" content="estimation immobilière, estimation immobilière gratuite, prix au m2, prix immobilier, DVF, valeur d'un bien, estimer son appartement, estimer sa maison" />
+
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png" />
   <link rel="canonical" href="https://www.estimatiz.fr/" />
-  <!-- Open Graph tags -->
-  <meta property="og:title" content="Estimatiz – Estimation immobilière en ligne gratuite" />
-  <meta property="og:description" content="Estimez votre appartement ou maison en ligne gratuitement. Basé sur les ventes DVF officielles — prix au m², fourchette basse, médiane et haute pour toute la France." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Estimation immobilière en ligne gratuite — Estimatiz" />
+  <meta property="og:description" content="Estimez votre bien gratuitement à partir des ventes DVF officielles. Prix au m² réel, fourchette basse, médiane et haute pour toute la France." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.estimatiz.fr/" />
   <meta property="og:locale" content="fr_FR" />
   <meta property="og:image" content="https://www.estimatiz.fr/assets/img/og-estimatiz.png" />
+
+  <!-- Schema WebSite + SearchAction -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "Estimatiz",
+    "alternateName": "Estimatiz — Estimation immobilière",
     "url": "https://www.estimatiz.fr/",
     "description": "Outil d'estimation immobilière gratuit basé sur les ventes réelles DVF — France entière 2014–2025.",
     "inLanguage": "fr-FR",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Estimatiz",
+      "url": "https://www.estimatiz.fr/"
+    },
     "potentialAction": {
       "@type": "SearchAction",
       "target": {
@@ -36,6 +46,39 @@
     }
   }
   </script>
+
+  <!-- Schema WebApplication -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Estimatiz",
+    "url": "https://www.estimatiz.fr/",
+    "applicationCategory": "RealEstateApplication",
+    "operatingSystem": "Web",
+    "browserRequirements": "Requires JavaScript and modern browser.",
+    "inLanguage": "fr-FR",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+    "featureList": [
+      "Estimation immobilière par adresse",
+      "Prix au m² par ville et département",
+      "Consultation des dernières ventes DVF",
+      "Évolution annuelle des prix",
+      "Export PDF des estimations"
+    ],
+    "audience": {
+      "@type": "Audience",
+      "audienceType": "Particuliers, propriétaires, acheteurs et investisseurs immobiliers"
+    }
+  }
+  </script>
+
+  <?php
+    $seoTwitterTitle = "Estimation immobilière en ligne gratuite — Estimatiz";
+    $seoTwitterDesc  = "Estimez votre bien à partir des ventes DVF officielles — prix au m² réel, France entière 2014–2025.";
+    include 'includes/seo-extras.php';
+  ?>
+
   <link rel="stylesheet" href="assets/css/site.css" />
   <style>
     :root{ --c1:#1E3A8A; --c2:#10B981; --c3:#111827; --c4:#F3F4F6; }
@@ -237,9 +280,7 @@
   </section>
 
   <!-- Footer -->
-  <footer>
-    Estimatiz — Données <a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/" target="_blank" rel="noopener">DVF · data.gouv.fr</a> &nbsp;|&nbsp; France 2014–2025
-  </footer>
+  <?php include 'includes/footer.php'; ?>
 
   <script src="assets/js/utils.js"></script>
   <script>

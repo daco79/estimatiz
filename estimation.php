@@ -4,26 +4,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Estimer son appartement ou sa maison en ligne – Estimatiz</title>
-  <!-- SEO enhancements -->
-  <meta name="description" content="Estimez votre appartement, maison ou studio en ligne gratuitement. Saisissez l'adresse et la surface pour obtenir une estimation immobilière basée sur les ventes DVF réelles de votre quartier." />
+  <title>Estimer son bien immobilier — Formulaire d'estimation | Estimatiz</title>
+  <meta name="description" content="Estimez gratuitement votre appartement ou maison à partir des ventes DVF officielles. Saisissez votre adresse, ajustez les filtres (surface, pièces) et obtenez une estimation immédiate." />
+
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png" />
   <link rel="canonical" href="https://www.estimatiz.fr/estimation" />
-  <!-- Open Graph tags -->
-  <meta property="og:title" content="Estimatiz – Estimer un bien" />
-  <meta property="og:description" content="Estimez votre bien immobilier en quelques clics en utilisant les ventes réelles et les données DVF. Ajustez la surface et les critères pour obtenir une estimation personnalisée." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Estimer son bien immobilier — Estimatiz" />
+  <meta property="og:description" content="Estimez votre bien gratuitement à partir des ventes DVF officielles. Surface, pièces, prix au m² — fourchette basse / médiane / haute." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.estimatiz.fr/estimation" />
   <meta property="og:locale" content="fr_FR" />
   <meta property="og:image" content="https://www.estimatiz.fr/assets/img/og-estimatiz.png" />
+
+  <!-- BreadcrumbList -->
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
     {"@type":"ListItem","position":1,"name":"Accueil","item":"https://www.estimatiz.fr/"},
     {"@type":"ListItem","position":2,"name":"Estimer un bien","item":"https://www.estimatiz.fr/estimation"}
   ]}
   </script>
+
+  <?php
+    $seoTwitterTitle = "Estimer son bien immobilier — Estimatiz";
+    $seoTwitterDesc  = "Estimez gratuitement votre appartement ou maison à partir des ventes DVF officielles.";
+    include 'includes/seo-extras.php';
+  ?>
+
   <link rel="stylesheet" href="assets/css/site.css" />
   <style>
     :root{ --c1:#1E3A8A; --c2:#10B981; --c3:#111827; --c4:#E5E7EB; }

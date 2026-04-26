@@ -2,22 +2,33 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Estimatiz – Résultats</title>
-  <!-- SEO enhancements -->
-  <meta name="description" content="Résultats d’estimation personnalisée du prix d’un bien immobilier selon les ventes DVF. Consultez les valeurs basse, médiane et haute, et les statistiques comparables." />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Résultats d’estimation immobilière | Estimatiz</title>
+  <meta name="description" content="Résultats détaillés de votre estimation immobilière : valeurs basse, médiane et haute, ventes comparables, indice de confiance. Données issues des DVF officielles." />
+
+  <!-- noindex temporaire : page alimentée par sessionStorage, non indexable en l’état -->
+  <meta name="robots" content="noindex, nofollow" />
+
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png" />
   <link rel="canonical" href="https://www.estimatiz.fr/results" />
-  <!-- Open Graph tags -->
-  <meta property="og:title" content="Estimatiz – Résultats" />
-  <meta property="og:description" content="Résultats d’estimation personnalisée du prix d’un bien immobilier selon les ventes DVF. Consultez les valeurs basse, médiane et haute, et les statistiques comparables." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Résultats d’estimation immobilière — Estimatiz" />
+  <meta property="og:description" content="Résultats personnalisés d’estimation basés sur les ventes DVF officielles : valeurs basse, médiane, haute et comparables." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.estimatiz.fr/results" />
   <meta property="og:locale" content="fr_FR" />
   <meta property="og:image" content="https://www.estimatiz.fr/assets/img/og-estimatiz.png" />
+
+  <?php
+    $seoTwitterTitle = "Résultats d’estimation immobilière — Estimatiz";
+    $seoTwitterDesc  = "Estimation personnalisée à partir des ventes DVF officielles.";
+    include ‘includes/seo-extras.php’;
+  ?>
+
   <link rel="stylesheet" href="assets/css/site.css" />
   <style>
     :root{ --c1:#1E3A8A; --c2:#10B981; --c3:#111827; --c4:#E5E7EB; }

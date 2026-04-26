@@ -39,7 +39,7 @@ function navClass(string $key, string $active, string $extra = ''): string {
       <li><a href="<?= $navRoot ?>prix-m2" <?= navClass('prix', $navActive) ?>>Prix au m²</a></li>
       <li><a href="<?= $navRoot ?>ventes" <?= navClass('ventes', $navActive) ?>>Dernières ventes</a></li>
       <li class="nav-dropdown">
-        <a href="#" <?= in_array($navActive, ['methodologie','faq','donnees','apropos','contact']) ? 'class="active"' : '' ?>>À propos</a>
+        <a href="#" <?= in_array($navActive, ['methodologie','faq','donnees','apropos','contact','mentions','confidentialite']) ? 'class="active"' : '' ?>>À propos</a>
         <div class="nav-dropdown-menu">
           <a href="<?= $navRoot ?>methodologie" <?= navClass('methodologie', $navActive) ?>>Méthodologie</a>
           <a href="<?= $navRoot ?>donnees"      <?= navClass('donnees',      $navActive) ?>>Données utilisées</a>
@@ -47,6 +47,9 @@ function navClass(string $key, string $active, string $extra = ''): string {
           <a href="<?= $navRoot ?>faq"          <?= navClass('faq',          $navActive) ?>>FAQ</a>
           <a href="<?= $navRoot ?>a-propos"     <?= navClass('apropos',      $navActive) ?>>À propos</a>
           <a href="<?= $navRoot ?>contact"      <?= navClass('contact',      $navActive) ?>>Contact</a>
+          <hr>
+          <a href="<?= $navRoot ?>mentions-legales"  <?= navClass('mentions',       $navActive) ?>>Mentions légales</a>
+          <a href="<?= $navRoot ?>confidentialite"   <?= navClass('confidentialite',$navActive) ?>>Confidentialité</a>
         </div>
       </li>
     </ul>
@@ -70,6 +73,9 @@ function navClass(string $key, string $active, string $extra = ''): string {
     <a href="<?= $navRoot ?>faq"          <?= navClass('faq',          $navActive) ?>>FAQ</a>
     <a href="<?= $navRoot ?>a-propos"     <?= navClass('apropos',      $navActive) ?>>À propos</a>
     <a href="<?= $navRoot ?>contact"      <?= navClass('contact',      $navActive) ?>>Contact</a>
+    <span class="mob-sep">Légal</span>
+    <a href="<?= $navRoot ?>mentions-legales"  <?= navClass('mentions',       $navActive) ?>>Mentions légales</a>
+    <a href="<?= $navRoot ?>confidentialite"   <?= navClass('confidentialite',$navActive) ?>>Confidentialité</a>
   </div>
 </nav>
 

@@ -2,30 +2,59 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Méthodologie – Estimatiz</title>
-  <!-- SEO enhancements -->
-  <meta name="description" content="Apprenez la méthodologie d’Estimatiz : sources des données DVF, recherche des comparables, filtrage statistique, calcul des estimations et limites." />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Méthodologie d’estimation immobilière — Comment Estimatiz calcule les prix</title>
+  <meta name="description" content="Découvrez la méthodologie d’estimation d’Estimatiz : sources DVF, recherche des comparables, filtrage statistique IQR, percentiles P20/P50/P80, indice de confiance. Méthode 100 % transparente." />
+
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png" />
   <link rel="canonical" href="https://www.estimatiz.fr/methodologie" />
-  <!-- Open Graph tags -->
-  <meta property="og:title" content="Méthodologie – Estimatiz" />
-  <meta property="og:description" content="Apprenez la méthodologie d’Estimatiz : sources des données DVF, recherche des comparables, filtrage statistique, calcul des estimations et limites." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Méthodologie d’estimation immobilière — Estimatiz" />
+  <meta property="og:description" content="Méthodologie complète : sources DVF, comparables, filtrage statistique, percentiles, indice de confiance. Aucune boîte noire." />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="https://www.estimatiz.fr/methodologie" />
   <meta property="og:locale" content="fr_FR" />
   <meta property="og:image" content="https://www.estimatiz.fr/assets/img/og-estimatiz.png" />
+
+  <!-- BreadcrumbList -->
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
     {"@type":"ListItem","position":1,"name":"Accueil","item":"https://www.estimatiz.fr/"},
     {"@type":"ListItem","position":2,"name":"Méthodologie","item":"https://www.estimatiz.fr/methodologie"}
   ]}
   </script>
+
+  <!-- Schema HowTo -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "Comment Estimatiz calcule une estimation immobilière",
+    "description": "Méthodologie pas à pas pour estimer la valeur d’un bien immobilier à partir des ventes réelles publiées par l’État (DVF / DGFiP).",
+    "totalTime": "PT30S",
+    "estimatedCost": { "@type": "MonetaryAmount", "currency": "EUR", "value": "0" },
+    "step": [
+      { "@type": "HowToStep", "position": 1, "name": "Sourcer les données", "text": "Estimatiz s’appuie exclusivement sur les Demandes de Valeurs Foncières (DVF), jeu de données officiel publié par la DGFiP sur data.gouv.fr.", "url": "https://www.estimatiz.fr/methodologie#source" },
+      { "@type": "HowToStep", "position": 2, "name": "Rechercher des comparables", "text": "À partir de l’adresse saisie, l’algorithme cherche les ventes réelles ayant eu lieu sur la même rue, ou à défaut dans la même section cadastrale ou la même commune.", "url": "https://www.estimatiz.fr/methodologie#comparables" },
+      { "@type": "HowToStep", "position": 3, "name": "Filtrer statistiquement", "text": "Les valeurs aberrantes sont retirées via un filtre IQR (1,5 × écart interquartile), conservant la diversité du marché tout en éliminant les outliers.", "url": "https://www.estimatiz.fr/methodologie#filtrage" },
+      { "@type": "HowToStep", "position": 4, "name": "Calculer les percentiles P20 / P50 / P80", "text": "Le prix au m² des ventes comparables est résumé par trois percentiles (estimation basse, médiane, haute), puis multiplié par la surface du bien à estimer.", "url": "https://www.estimatiz.fr/methodologie#calcul" },
+      { "@type": "HowToStep", "position": 5, "name": "Calculer un indice de confiance", "text": "L’indice de confiance (0–100 %) reflète la taille de l’échantillon et la dispersion des prix : un indice faible signale qu’il faut interpréter l’estimation avec prudence.", "url": "https://www.estimatiz.fr/methodologie#confiance" }
+    ]
+  }
+  </script>
+
+  <?php
+    $seoTwitterTitle = "Méthodologie d’estimation immobilière — Estimatiz";
+    $seoTwitterDesc  = "Sources DVF, comparables, filtrage statistique, percentiles, indice de confiance. Méthode 100 % transparente.";
+    include ‘includes/seo-extras.php’;
+  ?>
+
   <link rel="stylesheet" href="assets/css/site.css" />
-  <?php include 'includes/content-style.php'; ?>
+  <?php include ‘includes/content-style.php’; ?>
 </head>
 <body>
 <?php include 'includes/nav.php'; ?>
@@ -136,9 +165,7 @@
 
   </div>
 
-  <footer>
-    Estimatiz — Données <a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/" target="_blank" rel="noopener">DVF · data.gouv.fr</a> &nbsp;|&nbsp; France 2014–2025
-  </footer>
+  <?php include 'includes/footer.php'; ?>
 
 </body>
 </html>

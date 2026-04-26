@@ -31,29 +31,44 @@ $depts = [
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <!-- SEO meta tags -->
-  <meta name="description" content="Prix immobilier au m² par ville, département et rue en France. Consultez les prix des appartements et maisons issus des ventes DVF 2014–2025. Comparez et analysez le marché immobilier local."/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Prix au m² par ville et département en France | Estimatiz</title>
+  <meta name="description" content="Consultez le prix immobilier au m² par ville, département et arrondissement (Paris, Lyon, Marseille). Données DVF officielles 2014–2025 : médiane, P20, P80, évolution annuelle." />
+
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png" />
-  <link rel="canonical" href="https://www.estimatiz.fr/prix-m2"/>
-  <meta property="og:locale" content="fr_FR"/>
-  <meta property="og:type" content="website"/>
-  <meta property="og:title" content="Prix au m² – Estimatiz"/>
-  <meta property="og:description" content="Consultez l’évolution des prix au m² dans les grandes villes et départements de France grâce aux ventes officielles DVF 2014–2025. Filtrez par ville, département, type de bien et période."/>
-  <meta property="og:url" content="https://www.estimatiz.fr/prix-m2"/>
-  <meta property="og:image" content="https://www.estimatiz.fr/assets/img/og-estimatiz.png"/>
+  <link rel="canonical" href="https://www.estimatiz.fr/prix-m2" />
+
+  <!-- preconnect Chart.js -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Prix au m² par ville et département — Estimatiz" />
+  <meta property="og:description" content="Consultez le prix immobilier au m² par ville, département et arrondissement. Données DVF officielles 2014–2025 : médiane, P20, P80, évolution annuelle." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.estimatiz.fr/prix-m2" />
+  <meta property="og:locale" content="fr_FR" />
+  <meta property="og:image" content="https://www.estimatiz.fr/assets/img/og-estimatiz.png" />
+
+  <!-- BreadcrumbList -->
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
     {"@type":"ListItem","position":1,"name":"Accueil","item":"https://www.estimatiz.fr/"},
     {"@type":"ListItem","position":2,"name":"Prix au m²","item":"https://www.estimatiz.fr/prix-m2"}
   ]}
   </script>
-  <title>Prix immobilier au m² par ville et département – Estimatiz</title>
+
+  <?php
+    $seoTwitterTitle = "Prix au m² par ville et département — Estimatiz";
+    $seoTwitterDesc  = "Prix immobilier au m² (médiane, P20, P80) par ville, département et arrondissement, à partir des ventes DVF 2014–2025.";
+    include ‘includes/seo-extras.php’;
+  ?>
+
   <link rel="stylesheet" href="assets/css/site.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
   <style>
     :root{ --c1:#1E3A8A; --c2:#10B981; --c4:#F3F4F6; }
     *{ box-sizing:border-box; }
@@ -276,9 +291,7 @@ $depts = [
     </div>
   </div>
 
-  <footer>
-    Estimatiz — Données <a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/" target="_blank" rel="noopener">DVF · data.gouv.fr</a> &nbsp;|&nbsp; France 2014–2025
-  </footer>
+  <?php include 'includes/footer.php'; ?>
 
 <script src="assets/js/utils.js"></script>
 <script>

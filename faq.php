@@ -4,21 +4,31 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>FAQ – Estimatiz</title>
-  <!-- SEO enhancements -->
-  <meta name="description" content="Questions fréquentes sur Estimatiz : recherche d'adresse, méthode d’estimation, indice de confiance et limites." />
+  <title>FAQ — Estimation immobilière, méthode et données | Estimatiz</title>
+  <meta name="description" content="Toutes les réponses à vos questions sur Estimatiz : recherche d'adresse, méthode d'estimation par percentiles, indice de confiance, source DVF officielle, limites de l'outil." />
+
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png" />
   <link rel="canonical" href="https://www.estimatiz.fr/faq" />
-  <!-- Open Graph tags -->
-  <meta property="og:title" content="FAQ – Estimatiz" />
-  <meta property="og:description" content="Questions fréquentes sur Estimatiz : recherche d'adresse, méthode d’estimation, indice de confiance et limites." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="FAQ Estimation immobilière — Estimatiz" />
+  <meta property="og:description" content="Réponses sur Estimatiz : recherche d'adresse, méthode, indice de confiance, source DVF officielle, limites." />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="https://www.estimatiz.fr/faq" />
   <meta property="og:locale" content="fr_FR" />
   <meta property="og:image" content="https://www.estimatiz.fr/assets/img/og-estimatiz.png" />
+
+  <!-- BreadcrumbList -->
   <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+    {"@type":"ListItem","position":1,"name":"Accueil","item":"https://www.estimatiz.fr/"},
+    {"@type":"ListItem","position":2,"name":"FAQ","item":"https://www.estimatiz.fr/faq"}
+  ]}
+  </script>
+
+    <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -61,6 +71,12 @@
     ]
   }
   </script>
+  <?php
+    $seoTwitterTitle = "FAQ Estimation immobilière — Estimatiz";
+    $seoTwitterDesc  = "Réponses sur Estimatiz : adresses, méthode, indice de confiance, DVF, limites.";
+    include 'includes/seo-extras.php';
+  ?>
+
   <link rel="stylesheet" href="assets/css/site.css" />
   <?php include 'includes/content-style.php'; ?>
 </head>
@@ -194,9 +210,7 @@
 
   </div>
 
-  <footer>
-    Estimatiz — Données <a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/" target="_blank" rel="noopener">DVF · data.gouv.fr</a> &nbsp;|&nbsp; France 2014–2025
-  </footer>
+  <?php include 'includes/footer.php'; ?>
 
 </body>
 </html>

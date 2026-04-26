@@ -2,22 +2,60 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Contact – Estimatiz</title>
-  <!-- SEO enhancements -->
-  <meta name="description" content="Contactez l'équipe Estimatiz pour signaler une adresse introuvable, une estimation incohérente, un bug ou une suggestion." />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contact Estimatiz — Signaler une erreur, poser une question</title>
+  <meta name="description" content="Contactez l'équipe Estimatiz pour signaler une adresse introuvable, une estimation incohérente, un bug, suggérer une amélioration ou poser une question sur les données DVF." />
+
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png" />
   <link rel="canonical" href="https://www.estimatiz.fr/contact" />
-  <!-- Open Graph tags -->
-  <meta property="og:title" content="Contact – Estimatiz" />
-  <meta property="og:description" content="Contactez l'équipe Estimatiz pour signaler une adresse introuvable, une estimation incohérente, un bug ou une suggestion." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Contact Estimatiz" />
+  <meta property="og:description" content="Contactez l'équipe Estimatiz : signaler un bug, une adresse manquante, une estimation incohérente ou suggérer une amélioration." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.estimatiz.fr/contact" />
   <meta property="og:locale" content="fr_FR" />
   <meta property="og:image" content="https://www.estimatiz.fr/assets/img/og-estimatiz.png" />
+
+  <!-- BreadcrumbList -->
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+    {"@type":"ListItem","position":1,"name":"Accueil","item":"https://www.estimatiz.fr/"},
+    {"@type":"ListItem","position":2,"name":"Contact","item":"https://www.estimatiz.fr/contact"}
+  ]}
+  </script>
+
+  <!-- Schema ContactPage -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    "name": "Contact Estimatiz",
+    "url": "https://www.estimatiz.fr/contact",
+    "inLanguage": "fr-FR",
+    "about": {
+      "@type": "Organization",
+      "name": "Estimatiz",
+      "url": "https://www.estimatiz.fr/",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer support",
+        "availableLanguage": ["French"],
+        "areaServed": "FR"
+      }
+    }
+  }
+  </script>
+
+  <?php
+    $seoTwitterTitle = "Contact Estimatiz";
+    $seoTwitterDesc  = "Signaler une erreur, poser une question, suggérer une amélioration.";
+    include 'includes/seo-extras.php';
+  ?>
+
   <link rel="stylesheet" href="assets/css/site.css" />
   <?php include 'includes/content-style.php'; ?>
 </head>
@@ -82,9 +120,7 @@
       </div>
     </div>
   </div>
-  <footer>
-    Estimatiz — Données <a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/" target="_blank" rel="noopener">DVF · data.gouv.fr</a> &nbsp;|&nbsp; France 2014–2025
-  </footer>
+  <?php include 'includes/footer.php'; ?>
   <script>
   document.getElementById('btnSend').addEventListener('click', function() {
     const email   = document.getElementById('femail').value.trim();

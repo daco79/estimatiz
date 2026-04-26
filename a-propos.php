@@ -2,24 +2,40 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>À propos – Estimatiz, estimation immobilière en ligne gratuite</title>
-  <!-- SEO enhancements -->
-  <meta name="description" content="Estimatiz est un outil d’estimation immobilière en ligne gratuit. Estimez votre appartement ou maison à partir des ventes DVF officielles. Transparent, sans agence, sans inscription." />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>À propos d’Estimatiz — Outil indépendant d’estimation immobilière</title>
+  <meta name="description" content="Estimatiz est un outil indépendant fondé sur les données publiques DVF. Notre mission : rendre l’estimation immobilière transparente, précise et accessible à tous, sans algorithme boîte noire." />
+
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png" />
   <link rel="canonical" href="https://www.estimatiz.fr/a-propos" />
-  <!-- Open Graph tags -->
-  <meta property="og:title" content="À propos – Estimatiz" />
-  <meta property="og:description" content="Découvrez qui se cache derrière Estimatiz, ses valeurs et sa mission. Un outil transparent pour rendre l’estimation immobilière accessible à tous." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="À propos d’Estimatiz — Outil indépendant d’estimation immobilière" />
+  <meta property="og:description" content="Estimatiz est un outil indépendant fondé sur les données publiques DVF. Mission, valeurs et démarche." />
   <meta property="og:type" content="article" />
   <meta property="og:url" content="https://www.estimatiz.fr/a-propos" />
   <meta property="og:locale" content="fr_FR" />
   <meta property="og:image" content="https://www.estimatiz.fr/assets/img/og-estimatiz.png" />
+
+  <!-- BreadcrumbList -->
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+    {"@type":"ListItem","position":1,"name":"Accueil","item":"https://www.estimatiz.fr/"},
+    {"@type":"ListItem","position":2,"name":"À propos","item":"https://www.estimatiz.fr/a-propos"}
+  ]}
+  </script>
+
+  <?php
+    $seoTwitterTitle = "À propos d’Estimatiz — Outil indépendant d’estimation immobilière";
+    $seoTwitterDesc  = "Outil indépendant fondé sur les données publiques DVF. Mission, valeurs, démarche.";
+    include ‘includes/seo-extras.php’;
+  ?>
+
   <link rel="stylesheet" href="assets/css/site.css" />
-  <?php include 'includes/content-style.php'; ?>
+  <?php include ‘includes/content-style.php’; ?>
 </head>
 <body>
 <?php include 'includes/nav.php'; ?>
@@ -88,9 +104,7 @@
 
   </div>
 
-  <footer>
-    Estimatiz — Données <a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/" target="_blank" rel="noopener">DVF · data.gouv.fr</a> &nbsp;|&nbsp; France 2014–2025
-  </footer>
+  <?php include 'includes/footer.php'; ?>
 
 </body>
 </html>

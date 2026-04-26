@@ -31,27 +31,39 @@ $depts = [
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Dernières ventes immobilières – Estimatiz</title>
-  <meta name="description" content="Consultez les dernières ventes immobilières en France (DVF 2014–2025). Filtrez par type de bien, département, nombre de pièces et surface." />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dernières ventes immobilières en France (DVF 2014–2025) | Estimatiz</title>
+  <meta name="description" content="Consultez les dernières ventes immobilières officielles en France issues des DVF (DGFiP). Filtrez par type de bien, département, nombre de pièces, surface et période 2014–2025." />
+
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png" />
   <link rel="canonical" href="https://www.estimatiz.fr/ventes" />
-  <meta property="og:title" content="Dernières ventes immobilières – Estimatiz" />
-  <meta property="og:description" content="Consultez les dernières ventes immobilières en France (DVF 2014–2025). Filtrez par type de bien, département, nombre de pièces et surface." />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Dernières ventes immobilières en France — Estimatiz" />
+  <meta property="og:description" content="Consultez les ventes immobilières officielles France entière (DVF 2014–2025). Filtrez par type, département, pièces, surface et période." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.estimatiz.fr/ventes" />
   <meta property="og:locale" content="fr_FR" />
   <meta property="og:image" content="https://www.estimatiz.fr/assets/img/og-estimatiz.png" />
+
+  <!-- BreadcrumbList -->
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
     {"@type":"ListItem","position":1,"name":"Accueil","item":"https://www.estimatiz.fr/"},
     {"@type":"ListItem","position":2,"name":"Dernières ventes","item":"https://www.estimatiz.fr/ventes"}
   ]}
   </script>
-  <link rel="stylesheet" href="assets/css/site.css"/>
+
+  <?php
+    $seoTwitterTitle = "Dernières ventes immobilières en France — Estimatiz";
+    $seoTwitterDesc  = "Toutes les ventes officielles France entière (DVF 2014–2025), filtrables par type, département, pièces, surface et période.";
+    include 'includes/seo-extras.php';
+  ?>
+
+  <link rel="stylesheet" href="assets/css/site.css" />
   <style>
     :root{ --c1:#1E3A8A; --c2:#10B981; --c4:#F3F4F6; }
     *{ box-sizing:border-box; }
@@ -191,9 +203,7 @@ $depts = [
     <div id="sentinel"><span class="spin"></span></div>
   </div>
 
-  <footer>
-    Estimatiz — Données <a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/" target="_blank" rel="noopener">DVF · data.gouv.fr</a> &nbsp;|&nbsp; France 2014–2025
-  </footer>
+  <?php include 'includes/footer.php'; ?>
 
 <script>
 const fmt  = v => v == null ? '—' : new Intl.NumberFormat('fr-FR').format(Math.round(v)) + ' €';
