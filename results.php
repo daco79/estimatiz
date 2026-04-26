@@ -249,7 +249,7 @@
       btq:       suggestion.btq       || '',
       section:   suggestion.section   || '',
     });
-    document.getElementById('btnBack').href = 'estimation.php?' + backParams.toString();
+    document.getElementById('btnBack').href = 'estimation?' + backParams.toString();
   }
   const allRows = Array.isArray(mutData?.rows) ? mutData.rows : [];
   /* ---- Header écran ---- */

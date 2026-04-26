@@ -28,7 +28,9 @@ rm -f "$ZIP_NAME"
 zip -q -r "$ZIP_NAME" \
   index.php estimation.php results.php prix-m2.php ventes.php \
   donnees.php methodologie.php faq.php a-propos.php contact.php \
+  mentions-legales.php confidentialite.php \
   config.php \
+  favicon.ico \
   .htaccess robots.txt sitemap.xml \
   api/autocomplete.php api/surface.php api/mutations.php \
   api/prix-m2.php api/ventes.php api/export.php api/estimate.php \
