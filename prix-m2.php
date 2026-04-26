@@ -64,7 +64,7 @@ $depts = [
   <?php
     $seoTwitterTitle = "Prix au m² par ville et département — Estimatiz";
     $seoTwitterDesc  = "Prix immobilier au m² (médiane, P20, P80) par ville, département et arrondissement, à partir des ventes DVF 2014–2025.";
-    include ‘includes/seo-extras.php’;
+    include 'includes/seo-extras.php';
   ?>
 
   <link rel="stylesheet" href="assets/css/site.css" />

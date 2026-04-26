@@ -29,13 +29,13 @@
   </script>
 
   <?php
-    $seoTwitterTitle = "À propos d’Estimatiz — Outil indépendant d’estimation immobilière";
+    $seoTwitterTitle = "À propos d'Estimatiz — Outil indépendant d'estimation immobilière";
     $seoTwitterDesc  = "Outil indépendant fondé sur les données publiques DVF. Mission, valeurs, démarche.";
-    include ‘includes/seo-extras.php’;
+    include 'includes/seo-extras.php';
   ?>
 
   <link rel="stylesheet" href="assets/css/site.css" />
-  <?php include ‘includes/content-style.php’; ?>
+  <?php include 'includes/content-style.php'; ?>
 </head>
 <body>
 <?php include 'includes/nav.php'; ?>

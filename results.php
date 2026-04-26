@@ -4,10 +4,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Résultats d’estimation immobilière | Estimatiz</title>
+  <title>Résultats d'estimation immobilière | Estimatiz</title>
   <meta name="description" content="Résultats détaillés de votre estimation immobilière : valeurs basse, médiane et haute, ventes comparables, indice de confiance. Données issues des DVF officielles." />
 
-  <!-- noindex temporaire : page alimentée par sessionStorage, non indexable en l’état -->
+  <!-- noindex temporaire : page alimentée par sessionStorage, non indexable en l'état -->
   <meta name="robots" content="noindex, nofollow" />
 
   <link rel="icon" type="image/x-icon" href="/favicon.ico" />
@@ -16,17 +16,17 @@
   <link rel="canonical" href="https://www.estimatiz.fr/results" />
 
   <!-- Open Graph -->
-  <meta property="og:title" content="Résultats d’estimation immobilière — Estimatiz" />
-  <meta property="og:description" content="Résultats personnalisés d’estimation basés sur les ventes DVF officielles : valeurs basse, médiane, haute et comparables." />
+  <meta property="og:title" content="Résultats d'estimation immobilière — Estimatiz" />
+  <meta property="og:description" content="Résultats personnalisés d'estimation basés sur les ventes DVF officielles : valeurs basse, médiane, haute et comparables." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.estimatiz.fr/results" />
   <meta property="og:locale" content="fr_FR" />
   <meta property="og:image" content="https://www.estimatiz.fr/assets/img/og-estimatiz.png" />
 
   <?php
-    $seoTwitterTitle = "Résultats d’estimation immobilière — Estimatiz";
+    $seoTwitterTitle = "Résultats d'estimation immobilière — Estimatiz";
     $seoTwitterDesc  = "Estimation personnalisée à partir des ventes DVF officielles.";
-    include ‘includes/seo-extras.php’;
+    include 'includes/seo-extras.php';
   ?>
 
   <link rel="stylesheet" href="assets/css/site.css" />

@@ -48,13 +48,13 @@
   </script>
 
   <?php
-    $seoTwitterTitle = "Méthodologie d’estimation immobilière — Estimatiz";
+    $seoTwitterTitle = "Méthodologie d'estimation immobilière — Estimatiz";
     $seoTwitterDesc  = "Sources DVF, comparables, filtrage statistique, percentiles, indice de confiance. Méthode 100 % transparente.";
-    include ‘includes/seo-extras.php’;
+    include 'includes/seo-extras.php';
   ?>
 
   <link rel="stylesheet" href="assets/css/site.css" />
-  <?php include ‘includes/content-style.php’; ?>
+  <?php include 'includes/content-style.php'; ?>
 </head>
 <body>
 <?php include 'includes/nav.php'; ?>
