@@ -1,0 +1,58 @@
+==============================================================================
+PATCH 03 — results.php
+==============================================================================
+
+OBJECTIF :
+- Title plus riche par défaut
+- Page actuellement non-indexable (sessionStorage). On ajoute noindex
+  par sécurité tant que la page n'est pas refondue (Phase 2).
+- En Phase 2, on refondra cette page pour la rendre indexable via URL.
+
+OPÉRATION :
+Remplace l'intégralité du bloc <head> par celui ci-dessous.
+
+==============================================================================
+NOUVEAU <head> COMPLET POUR results.php :
+==============================================================================
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Résultats d'estimation immobilière | Estimatiz</title>
+  <meta name="description" content="Résultats détaillés de votre estimation immobilière : valeurs basse, médiane et haute, ventes comparables, indice de confiance. Données issues des DVF officielles." />
+
+  <!-- Phase 1 : noindex temporaire (la page sera refondue en Phase 2 pour devenir indexable) -->
+  <meta name="robots" content="noindex, nofollow" />
+
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png" />
+  <link rel="canonical" href="https://www.estimatiz.fr/results" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Résultats d'estimation immobilière — Estimatiz" />
+  <meta property="og:description" content="Résultats personnalisés d'estimation basés sur les ventes DVF officielles : valeurs basse, médiane, haute et comparables." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.estimatiz.fr/results" />
+  <meta property="og:locale" content="fr_FR" />
+  <meta property="og:image" content="https://www.estimatiz.fr/assets/img/og-estimatiz.png" />
+
+  <?php
+    $seoTwitterTitle = "Résultats d'estimation immobilière — Estimatiz";
+    $seoTwitterDesc  = "Estimation personnalisée à partir des ventes DVF officielles.";
+    include 'includes/seo-extras.php';
+  ?>
+
+  <link rel="stylesheet" href="assets/css/site.css" />
+
+  <!-- ⬇️ TON BLOC <style>...</style> INLINE EXISTANT RESTE ICI ⬇️ -->
+</head>
+
+==============================================================================
+NOTE IMPORTANTE :
+- noindex est ajouté CAR la page utilise sessionStorage et n'est donc pas
+  pertinente pour Google (contenu dépendant d'une saisie utilisateur préalable).
+- En Phase 2, on refondra results.php pour qu'elle accepte des paramètres URL,
+  permettant le partage et l'indexation de "/results?adresse=...&surface=...".
+- À ce moment-là, on retirera le noindex.
+==============================================================================

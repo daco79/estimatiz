@@ -1,0 +1,69 @@
+==============================================================================
+PATCH 09 — a-propos.php
+==============================================================================
+
+OBJECTIF :
+- Title enrichi
+- BreadcrumbList ajouté (n'existait pas)
+- Twitter Cards
+- ⚠️ CORRECTION TYPO dans le BODY (voir Section 2 ci-dessous)
+
+==============================================================================
+SECTION 1 — NOUVEAU <head> COMPLET POUR a-propos.php :
+==============================================================================
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>À propos d'Estimatiz — Outil indépendant d'estimation immobilière</title>
+  <meta name="description" content="Estimatiz est un outil indépendant fondé sur les données publiques DVF. Notre mission : rendre l'estimation immobilière transparente, précise et accessible à tous, sans algorithme boîte noire." />
+
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png" />
+  <link rel="canonical" href="https://www.estimatiz.fr/a-propos" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="À propos d'Estimatiz — Outil indépendant d'estimation immobilière" />
+  <meta property="og:description" content="Estimatiz est un outil indépendant fondé sur les données publiques DVF. Mission, valeurs et démarche." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://www.estimatiz.fr/a-propos" />
+  <meta property="og:locale" content="fr_FR" />
+  <meta property="og:image" content="https://www.estimatiz.fr/assets/img/og-estimatiz.png" />
+
+  <!-- BreadcrumbList (NOUVEAU) -->
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+    {"@type":"ListItem","position":1,"name":"Accueil","item":"https://www.estimatiz.fr/"},
+    {"@type":"ListItem","position":2,"name":"À propos","item":"https://www.estimatiz.fr/a-propos"}
+  ]}
+  </script>
+
+  <?php
+    $seoTwitterTitle = "À propos d'Estimatiz — Outil indépendant d'estimation immobilière";
+    $seoTwitterDesc  = "Outil indépendant fondé sur les données publiques DVF. Mission, valeurs, démarche.";
+    include 'includes/seo-extras.php';
+  ?>
+
+  <link rel="stylesheet" href="assets/css/site.css" />
+  <?php include 'includes/content-style.php'; ?>
+</head>
+
+==============================================================================
+SECTION 2 — CORRECTION DE LA COQUILLE DANS LE BODY :
+==============================================================================
+
+DANS LE BODY de a-propos.php, dans la <section c-section> "Le projet",
+TROUVE :
+
+    Les fichiers DVF publiés par l'État contiennent des centaines de milliers
+    de ventes réelles, mais leur exploitation nécessite des compétences
+    techniques que la plupart des particuliers n't ont pas.
+
+REMPLACE PAR :
+
+    Les fichiers DVF publiés par l'État contiennent des centaines de milliers
+    de ventes réelles, mais leur exploitation nécessite des compétences
+    techniques que la plupart des particuliers n'ont pas.
+
+(la modification : "n't ont pas" → "n'ont pas")

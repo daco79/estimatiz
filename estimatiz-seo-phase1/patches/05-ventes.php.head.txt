@@ -1,0 +1,55 @@
+==============================================================================
+PATCH 05 — ventes.php
+==============================================================================
+
+OBJECTIF :
+- Title enrichi (France + DVF + année)
+- BreadcrumbList vérifié
+- Twitter Cards
+
+OPÉRATION :
+Remplace l'intégralité du bloc <head> par celui ci-dessous.
+ATTENTION : ce fichier commence par un bloc PHP avec $depts = [...]; — ce bloc
+PHP RESTE INCHANGÉ EN HAUT.
+
+==============================================================================
+NOUVEAU <head> COMPLET POUR ventes.php :
+==============================================================================
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dernières ventes immobilières en France (DVF 2014–2025) | Estimatiz</title>
+  <meta name="description" content="Consultez les dernières ventes immobilières officielles en France issues des DVF (DGFiP). Filtrez par type de bien, département, nombre de pièces, surface et période 2014–2025." />
+
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/img/favicon-16x16.png" />
+  <link rel="canonical" href="https://www.estimatiz.fr/ventes" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Dernières ventes immobilières en France — Estimatiz" />
+  <meta property="og:description" content="Consultez les ventes immobilières officielles France entière (DVF 2014–2025). Filtrez par type, département, pièces, surface et période." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.estimatiz.fr/ventes" />
+  <meta property="og:locale" content="fr_FR" />
+  <meta property="og:image" content="https://www.estimatiz.fr/assets/img/og-estimatiz.png" />
+
+  <!-- BreadcrumbList -->
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+    {"@type":"ListItem","position":1,"name":"Accueil","item":"https://www.estimatiz.fr/"},
+    {"@type":"ListItem","position":2,"name":"Dernières ventes","item":"https://www.estimatiz.fr/ventes"}
+  ]}
+  </script>
+
+  <?php
+    $seoTwitterTitle = "Dernières ventes immobilières en France — Estimatiz";
+    $seoTwitterDesc  = "Toutes les ventes officielles France entière (DVF 2014–2025), filtrables par type, département, pièces, surface et période.";
+    include 'includes/seo-extras.php';
+  ?>
+
+  <link rel="stylesheet" href="assets/css/site.css" />
+
+  <!-- ⬇️ TON BLOC <style>...</style> INLINE EXISTANT RESTE ICI ⬇️ -->
+</head>
