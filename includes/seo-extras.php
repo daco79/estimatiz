@@ -15,6 +15,8 @@
 ?>
 <!-- SEO extras (partagés) -->
 <meta name="theme-color" content="#1E3A8A" />
+<link rel="alternate" hreflang="fr-FR" href="<?= $canonical_url ?? 'https://www.estimatiz.fr/' ?>" />
+<link rel="alternate" hreflang="x-default" href="<?= $canonical_url ?? 'https://www.estimatiz.fr/' ?>" />
 <meta name="author" content="Estimatiz" />
 <meta name="robots" content="index, follow, max-image-preview:large" />
 <meta property="og:site_name" content="Estimatiz" />

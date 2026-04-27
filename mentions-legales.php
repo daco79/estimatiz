@@ -47,23 +47,55 @@
 
     <div class="c-section">
       <h2>Éditeur du site</h2>
+
+      
       <p>
-        <!-- ⚠️ À COMPLÉTER avec tes coordonnées réelles -->
-        <strong>Estimatiz</strong><br />
-        [Nom et prénom du responsable de publication]<br />
-        [Forme juridique : EI / EURL / SAS / particulier...]<br />
-        [Numéro SIREN/SIRET si applicable]<br />
-        [Adresse postale]<br />
+        <strong>Estimatiz</strong> est édité par :<br />
+        <strong>Laurent Da costa</strong>, en qualité de particulier<br />
+        Domicilié(e) à : <strong>4 rue Saint Philippe du Roule 75011 Paris</strong><br />
         Email : <a href="mailto:contact@estimatiz.fr">contact@estimatiz.fr</a>
       </p>
-      <p>Directeur de la publication : [Nom et prénom]</p>
+      <p>Directeur de la publication : <strong>[Laurent Da costa]</strong></p>
+
+      <!-- ============================================================ -->
+      <!-- CAS 2 : Auto-entrepreneur / Entreprise individuelle           -->
+      <!-- (à utiliser à la place du CAS 1 si applicable)                -->
+      <!-- ============================================================ -->
+      <!--
+      <p>
+        <strong>Estimatiz</strong> est édité par :<br />
+        <strong>[Prénom NOM]</strong>, entrepreneur individuel (auto-entrepreneur)<br />
+        SIREN : <strong>[XXX XXX XXX]</strong><br />
+        Adresse : <strong>[adresse complète]</strong><br />
+        Email : <a href="mailto:contact@estimatiz.fr">contact@estimatiz.fr</a>
+      </p>
+      <p>Directeur de la publication : <strong>[Prénom NOM]</strong></p>
+      -->
+
+      <!-- ============================================================ -->
+      <!-- CAS 3 : Société (SAS, SARL, EURL...)                          -->
+      <!-- (à utiliser à la place du CAS 1 si applicable)                -->
+      <!-- ============================================================ -->
+      <!--
+      <p>
+        <strong>Estimatiz</strong> est édité par :<br />
+        <strong>[Raison sociale]</strong>, [forme juridique : SAS / SARL / EURL]<br />
+        Capital social : <strong>[X XXX €]</strong><br />
+        SIREN : <strong>[XXX XXX XXX]</strong><br />
+        RCS : <strong>[Ville d'immatriculation, n° XXX XXX XXX]</strong><br />
+        N° TVA intracommunautaire : <strong>[FRXX XXXXXXXXX]</strong><br />
+        Siège social : <strong>[adresse complète]</strong><br />
+        Email : <a href="mailto:contact@estimatiz.fr">contact@estimatiz.fr</a>
+      </p>
+      <p>Directeur de la publication : <strong>[Prénom NOM, en qualité de Président / Gérant]</strong></p>
+      -->
     </div>
 
     <div class="c-section">
       <h2>Hébergeur</h2>
       <p>
         <strong>O2switch</strong><br />
-        222-224 Boulevard Gustave Flaubert<br />
+        Chemin des Pardiaux<br />
         63000 Clermont-Ferrand, France<br />
         Tél. : 04 44 44 60 40<br />
         Site : <a href="https://www.o2switch.fr/" target="_blank" rel="noopener">www.o2switch.fr</a>
@@ -94,10 +126,7 @@
 
   </main>
 
-  <footer>
-    Estimatiz — Données <a href="https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/" target="_blank" rel="noopener">DVF · data.gouv.fr</a> &nbsp;|&nbsp; France 2014–2025 &nbsp;|&nbsp;
-    <a href="/mentions-legales">Mentions légales</a> &nbsp;|&nbsp;
-    <a href="/confidentialite">Confidentialité</a>
-  </footer>
+  <?php include 'includes/footer.php'; ?>
+
 </body>
 </html>
