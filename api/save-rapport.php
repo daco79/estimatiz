@@ -123,14 +123,12 @@ foreach ($rows as $r) {
 }
 
 // ── URL publique du rapport ────────────────────────────────────────────────
-$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
-$host     = $_SERVER['HTTP_HOST'] ?? 'estimatiz.fr';
-// Détermine le chemin de base (ex: "" sur prod, "/estimatiz" en local)
-$scriptName = $_SERVER['SCRIPT_NAME'] ?? '/api/save-rapport.php'; // /estimatiz/api/save-rapport.php
-$basePath   = rtrim(dirname(dirname($scriptName)), '/');           // /estimatiz ou ''
-$baseUrl    = $protocol . '://' . $host . $basePath;
-$rapportUrl = $baseUrl . '/rapports/' . $filename;
-$siteUrl    = $baseUrl . '/';
+// Les rapports doivent pointer vers le domaine public, même s'ils sont
+// générés depuis un environnement local.
+$publicBaseUrl = 'https://www.estimatiz.fr';
+$rapportUrl    = $publicBaseUrl . '/rapports/' . $filename;
+$siteUrl       = $publicBaseUrl . '/';
+$basePath      = '';
 
 // ── Génération HTML ────────────────────────────────────────────────────────
 $labelEsc = htmlspecialchars($label, ENT_QUOTES, 'UTF-8');

@@ -128,13 +128,11 @@ foreach ($rows as $r) {
 }
 
 // ── URL publique ───────────────────────────────────────────────────────────
-$protocol   = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
-$host       = $_SERVER['HTTP_HOST'] ?? 'estimatiz.fr';
-$scriptName = $_SERVER['SCRIPT_NAME'] ?? '/api/save-rapport-seo.php';
-$basePath   = rtrim(dirname(dirname($scriptName)), '/');
-$baseUrl    = $protocol . '://' . $host . $basePath;
-$rapportUrl = $baseUrl . '/rapports/automatique/' . $dept . '/' . $communeSlug . '/' . $filename;
-$siteUrl    = $baseUrl . '/';
+// Les rapports SEO sont destinés à l'indexation Google : on force donc
+// systématiquement le domaine public, même si la génération est lancée en local.
+$publicBaseUrl = 'https://www.estimatiz.fr';
+$rapportUrl    = $publicBaseUrl . '/rapports/automatique/' . $dept . '/' . $communeSlug . '/' . $filename;
+$siteUrl       = $publicBaseUrl . '/';
 // Chemin relatif vers la racine du site depuis rapports/automatique/{dept}/{commune}/
 // Fonctionne identiquement en local (XAMPP) et en production (o2switch)
 $assetsBase = '../../../..';
