@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """
-generate_results.py — Générateur de rapports SEO Estimatiz
-Interroge la base DVF, calcule les estimations et appelle api/save-rapport-seo.php.
+generate_results.py — Générateur de rapports SEO Estimatiz (V2 — un rapport par RUE)
+
+CHANGEMENT MAJEUR vs V1 :
+- ❌ V1 générait un rapport par NUMÉRO sur la rue → 80 rapports quasi-identiques
+     pour la rue de Rivoli = thin content, risque de pénalité Google Panda.
+- ✅ V2 génère UN rapport par RUE → contenu unique, plus dense, évite la duplication.
 
 Usage :
   python generate_results.py --voie "RUE VOLTAIRE" --commune "Paris"
@@ -114,21 +118,6 @@ def fetch_transactions(cursor, voie: str, commune_prefix: str) -> list:
     cursor.execute(sql, (voie.upper(), commune_prefix + '%'))
     return cursor.fetchall()
 
-def fetch_numbers_on_street(cursor, voie: str, commune_prefix: str) -> list:
-    sql = """
-        SELECT DISTINCT adresse_numero
-        FROM dvf_france
-        WHERE adresse_nom_voie = %s
-          AND nom_commune LIKE %s
-          AND type_local IN ('Appartement', 'Maison')
-          AND valeur_fonciere >= 10000
-          AND COALESCE(lot1_surface_carrez, surface_reelle_bati) > 0
-          AND adresse_numero IS NOT NULL AND adresse_numero != ''
-        ORDER BY CAST(adresse_numero AS UNSIGNED)
-    """
-    cursor.execute(sql, (voie.upper(), commune_prefix + '%'))
-    return [r['adresse_numero'] for r in cursor.fetchall()]
-
 def fetch_streets_by_dept(cursor, dept: str, min_trans: int) -> list:
     sql = """
         SELECT adresse_nom_voie, nom_commune, code_postal,
@@ -181,14 +170,15 @@ def compute_estimation(rows: list) -> dict:
     }
 
 # ── Construction du payload ──────────────────────────────────────────────────
-def build_payload(voie: str, rows: list, est: dict, numero: str | None = None) -> dict:
+# CHANGEMENT V2 : suppression du paramètre `numero` — un rapport par RUE
+def build_payload(voie: str, rows: list, est: dict) -> dict:
     first     = rows[0]
     cp        = str(first['code_postal']) if first['code_postal'] else ''
     commune   = str(first['nom_commune']) if first['nom_commune'] else ''
     code_voie = str(first['adresse_code_voie']) if first['adresse_code_voie'] else ''
 
-    num_prefix = f"{numero} " if numero else ''
-    label      = f"{num_prefix}{voie.title()}, {commune}"
+    # Label = "Rue Voltaire, Paris 11e Arrondissement" (pas de numéro)
+    label = f"{voie.title()}, {commune}"
 
     payload_rows = []
     for r in rows[:MAX_ROWS]:
@@ -214,7 +204,7 @@ def build_payload(voie: str, rows: list, est: dict, numero: str | None = None) -
             'voie':      voie,
             'commune':   commune,
             'code_voie': code_voie,
-            'numero':    numero or '',
+            # 'numero': supprimé — un rapport par rue
         },
         'estimation': est,
         'rows':       payload_rows,
@@ -228,13 +218,13 @@ def commune_prefix(commune: str) -> str:
     if c.startswith('marseille'):  return 'Marseille'
     return commune.strip()
 
-# ── Génération par rue (un rapport par numéro) ───────────────────────────────
+# ── Génération par rue ───────────────────────────────────────────────────────
+# CHANGEMENT V2 : retourne UN seul URL (pas un par numéro)
 def generate_by_street(voie: str, commune: str) -> list[str]:
     prefix = commune_prefix(commune)
     db     = get_db()
     cursor = db.cursor(dictionary=True)
-    rows    = fetch_transactions(cursor, voie, prefix)
-    numbers = fetch_numbers_on_street(cursor, voie, prefix)
+    rows = fetch_transactions(cursor, voie, prefix)
     cursor.close()
     db.close()
 
@@ -250,29 +240,26 @@ def generate_by_street(voie: str, commune: str) -> list[str]:
         return []
 
     est = compute_estimation(rows)
-    print(f"  {est['count']} ventes | P20={est['p20']} · P50={est['p50']} · P80={est['p80']} €/m² | confiance {est['conf']}% | {len(numbers)} numéros")
+    print(f"  {est['count']} ventes | P20={est['p20']} · P50={est['p50']} · P80={est['p80']} €/m² | confiance {est['conf']}%")
 
-    urls = []
-    for numero in numbers:
-        payload = build_payload(voie, rows, est, numero)
-        try:
-            resp = requests.post(API_URL, json=payload, timeout=30)
-            resp.raise_for_status()
-            data = resp.json()
-        except Exception as e:
-            print(f"    ✗ [{numero}] Erreur HTTP : {e}")
-            continue
-        if not data.get('ok'):
-            print(f"    ✗ [{numero}] Erreur API : {data.get('error')}")
-            continue
-        url = data['url']
-        urls.append(url)
-        print(f"    ✓ {numero} {voie.title()}, {commune} → {url}")
+    # Un seul payload par rue
+    payload = build_payload(voie, rows, est)
+    try:
+        resp = requests.post(API_URL, json=payload, timeout=30)
+        resp.raise_for_status()
+        data = resp.json()
+    except Exception as e:
+        print(f"    ✗ Erreur HTTP : {e}")
+        return []
 
-    if urls:
-        update_sitemap(urls)
+    if not data.get('ok'):
+        print(f"    ✗ Erreur API : {data.get('error')}")
+        return []
 
-    return urls
+    url = data['url']
+    print(f"    ✓ {voie.title()}, {commune} → {url}")
+    update_sitemap([url])
+    return [url]
 
 # ── Génération par département ───────────────────────────────────────────────
 def generate_by_dept(dept: str, min_trans: int) -> None:
@@ -295,13 +282,16 @@ def generate_by_dept(dept: str, min_trans: int) -> None:
 # ── CLI ───────────────────────────────────────────────────────────────────────
 def main():
     parser = argparse.ArgumentParser(
-        description='Générateur de rapports SEO Estimatiz',
+        description='Générateur de rapports SEO Estimatiz (V2 — un rapport par rue)',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Exemples :
   python generate_results.py --voie "RUE VOLTAIRE" --commune "Paris"
   python generate_results.py --dept 75 --min-trans 10
   python generate_results.py --dept 69 --min-trans 15
+
+⚠️ V2 : un rapport par RUE (plus par numéro). Si tu as déjà généré des rapports
+en V1, supprimer le contenu de rapports/automatique/ avant de relancer.
         """
     )
     parser.add_argument('--voie',      help='Nom de la voie  ex: "RUE VOLTAIRE"')
@@ -314,7 +304,7 @@ Exemples :
     if args.voie and args.commune:
         print(f"\n  Génération : {args.voie.upper()}, {args.commune}\n")
         urls = generate_by_street(args.voie, args.commune)
-        print(f"\n  ✓ {len(urls)} rapports générés")
+        print(f"\n  ✓ {len(urls)} rapport généré")
     elif args.dept:
         generate_by_dept(args.dept, args.min_trans)
     else:

@@ -104,6 +104,8 @@ RewriteEngine On
 
 # 5.1 — Force HTTPS + www. (CRITIQUE pour SEO)
 # Tous les canonicals utilisent https://www.estimatiz.fr/ — on aligne ici
+# Exception : localhost (génération Python locale)
+RewriteCond %{HTTP_HOST} !^localhost [NC]
 RewriteCond %{HTTPS} off [OR]
 RewriteCond %{HTTP_HOST} !^www\. [NC]
 RewriteCond %{HTTP_HOST} ^(?:www\.)?(.+)$ [NC]
