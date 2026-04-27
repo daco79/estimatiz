@@ -135,6 +135,9 @@ $basePath   = rtrim(dirname(dirname($scriptName)), '/');
 $baseUrl    = $protocol . '://' . $host . $basePath;
 $rapportUrl = $baseUrl . '/rapports/automatique/' . $dept . '/' . $communeSlug . '/' . $filename;
 $siteUrl    = $baseUrl . '/';
+// Chemin relatif vers la racine du site depuis rapports/automatique/{dept}/{commune}/
+// Fonctionne identiquement en local (XAMPP) et en production (o2switch)
+$assetsBase = '../../../..';
 
 // ── Données SEO ────────────────────────────────────────────────────────────
 $labelEsc   = htmlspecialchars($label, ENT_QUOTES, 'UTF-8');
@@ -258,9 +261,9 @@ $html = <<<HTML
   <meta name="twitter:title"       content="Estimation immobilière — {$labelEsc} | Estimatiz"/>
   <meta name="twitter:description" content="{$metaDescEsc}"/>
   <script type="application/ld+json">{$jsonLdJson}</script>
-  <link rel="icon" type="image/x-icon" href="{$basePath}/favicon.ico"/>
-  <link rel="stylesheet" href="{$basePath}/assets/css/site.css"/>
-  <link rel="stylesheet" href="{$basePath}/assets/css/rapport-seo.css"/>
+  <link rel="icon" type="image/x-icon" href="{$assetsBase}/favicon.ico"/>
+  <link rel="stylesheet" href="{$assetsBase}/assets/css/site.css"/>
+  <link rel="stylesheet" href="{$assetsBase}/assets/css/rapport-seo.css"/>
 </head>
 <body>
 
