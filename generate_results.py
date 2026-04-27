@@ -11,7 +11,7 @@ Usage :
   python generate_results.py --voie "RUE VOLTAIRE" --commune "Paris"
   python generate_results.py --dept 75 --min-trans 10
 
-  Pour le moment on a generer le 75, 91, 92, 93,
+  Pour le moment on a generer le 75, 92, 93,94
 """
 
 import argparse
