@@ -38,24 +38,17 @@ function seo_slugify(string $str): string {
     return trim($str, '-');
 }
 
-$cp     = preg_replace('/[^0-9]/', '', $suggestion['cp']     ?? '');
-$voie   = seo_slugify($suggestion['voie']   ?? $label);
-$numero = preg_replace('/[^0-9]/', '', $suggestion['numero'] ?? '');
+$cp          = preg_replace('/[^0-9]/', '', $suggestion['cp'] ?? '');
+$communeRaw  = $suggestion['commune'] ?? '';
+$dept        = preg_replace('/[^0-9A-Za-z]/', '', $suggestion['dept'] ?? '') ?: (substr($cp, 0, 2) ?: 'fr');
+$voie        = seo_slugify($suggestion['voie'] ?? $label);
+$communeSlug = seo_slugify($communeRaw ?: 'france');
+$voieDisplay = mb_convert_case(trim($suggestion['voie'] ?? ''), MB_CASE_TITLE, 'UTF-8');
+$filename    = substr($voie ?: 'rue', 0, 80) . '.html';
 
-if ($numero) {
-    $base     = $numero . '-' . ($voie ?: 'adresse') . ($cp ? '-' . $cp : '');
-    $base     = substr($base, 0, 60);
-    $filename = $base . '.html';
-} else {
-    $base     = ($cp ? $cp . '-' : '') . ($voie ?: 'adresse');
-    $base     = substr($base, 0, 60);
-    $hash     = substr(md5($base . microtime(true) . rand()), 0, 6);
-    $filename = $base . '-' . $hash . '.html';
-}
-
-// ── Dossier de destination : rapports/automatique/{year}/ ──────────────────
-$year_      = (new DateTime())->format('Y');
-$autoDir    = dirname(__DIR__) . '/rapports/automatique/' . $year_;
+// ── Dossier de destination : rapports/automatique/{dept}/{commune-slug}/ ────
+$year_   = (new DateTime())->format('Y');
+$autoDir = dirname(__DIR__) . '/rapports/automatique/' . $dept . '/' . $communeSlug;
 if (!is_dir($autoDir)) {
     mkdir($autoDir, 0755, true);
 }
@@ -140,13 +133,15 @@ $host       = $_SERVER['HTTP_HOST'] ?? 'estimatiz.fr';
 $scriptName = $_SERVER['SCRIPT_NAME'] ?? '/api/save-rapport-seo.php';
 $basePath   = rtrim(dirname(dirname($scriptName)), '/');
 $baseUrl    = $protocol . '://' . $host . $basePath;
-$rapportUrl = $baseUrl . '/rapports/automatique/' . $year_ . '/' . $filename;
+$rapportUrl = $baseUrl . '/rapports/automatique/' . $dept . '/' . $communeSlug . '/' . $filename;
 $siteUrl    = $baseUrl . '/';
 
 // ── Données SEO ────────────────────────────────────────────────────────────
 $labelEsc   = htmlspecialchars($label, ENT_QUOTES, 'UTF-8');
-$communeRaw = $suggestion['commune'] ?? '';
-$commune    = htmlspecialchars($communeRaw, ENT_QUOTES, 'UTF-8');
+$communeRaw    = $suggestion['commune'] ?? '';
+$commune       = htmlspecialchars($communeRaw, ENT_QUOTES, 'UTF-8');
+$deptEsc       = htmlspecialchars($dept, ENT_QUOTES, 'UTF-8');
+$voieDisplayEsc = htmlspecialchars($voieDisplay, ENT_QUOTES, 'UTF-8');
 $cpEsc      = htmlspecialchars($cp, ENT_QUOTES, 'UTF-8');
 $nTrans     = count($rows);
 $pluralS    = $nTrans > 1 ? 's' : '';
@@ -204,8 +199,9 @@ $jld = [
             '@type'           => 'BreadcrumbList',
             'itemListElement' => [
                 ['@type' => 'ListItem', 'position' => 1, 'name' => 'Accueil',                'item' => $siteUrl],
-                ['@type' => 'ListItem', 'position' => 2, 'name' => 'Estimation immobilière', 'item' => $siteUrl . 'estimation'],
-                ['@type' => 'ListItem', 'position' => 3, 'name' => $label,                   'item' => $rapportUrl],
+                ['@type' => 'ListItem', 'position' => 2, 'name' => 'Département ' . $dept,   'item' => $siteUrl . 'prix-m2?mode=villes&dep=' . $dept],
+                ['@type' => 'ListItem', 'position' => 3, 'name' => $communeRaw,              'item' => $siteUrl . 'prix-m2?mode=rues&cp=' . $cp],
+                ['@type' => 'ListItem', 'position' => 4, 'name' => $label,                   'item' => $rapportUrl],
             ],
         ],
         [
@@ -264,139 +260,7 @@ $html = <<<HTML
   <script type="application/ld+json">{$jsonLdJson}</script>
   <link rel="icon" type="image/x-icon" href="{$basePath}/favicon.ico"/>
   <link rel="stylesheet" href="{$basePath}/assets/css/site.css"/>
-  <style>
-    /* ── Base ── */
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;color:#111827;background:#F3F4F6}
-    /* ── Nav ── */
-    .sitenav{background:#fff;border-bottom:1px solid #e5e7eb;position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(0,0,0,.06)}
-    .sitenav-inner{max-width:1100px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px}
-    .sitenav-logo{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:inherit;flex-shrink:0}
-    .sitenav-logo-icon{width:38px;height:38px;flex-shrink:0}
-    .sitenav-logo-text{display:flex;flex-direction:column;line-height:1.2}
-    .sitenav-logo-name{font-size:18px;font-weight:800;color:#1E3A8A}
-    .sitenav-logo-tag{font-size:10px;color:#6B7280;letter-spacing:.03em}
-    .sitenav-logo:hover .sitenav-logo-name{color:#1e40af}
-    .sitenav-links{display:flex;align-items:center;gap:2px;list-style:none;margin:0;padding:0}
-    .sitenav-links a{display:inline-block;padding:6px 11px;font-size:13px;font-weight:600;color:#374151;text-decoration:none;border-radius:8px;white-space:nowrap}
-    .sitenav-links a:hover{background:#f3f4f6;color:#111827}
-    .sitenav-cta{background:#1E3A8A!important;color:#fff!important;border-radius:10px!important;padding:7px 14px!important}
-    .sitenav-cta:hover{background:#1e40af!important}
-    @media(max-width:768px){.sitenav-links{display:none}.sitenav-inner{padding:0 16px}}
-    /* ── Footer ── */
-    .site-footer{background:#111827;color:rgba(255,255,255,.7);padding:48px 24px 20px;font-size:14px;margin-top:auto}
-    .footer-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:32px;padding-bottom:32px;border-bottom:1px solid rgba(255,255,255,.1)}
-    .footer-brand{font-size:18px;font-weight:800;color:#fff;margin-bottom:8px}
-    .footer-tag{font-size:13px;color:rgba(255,255,255,.6);line-height:1.6;margin:0}
-    .footer-col h4{font-size:13px;font-weight:700;color:#fff;margin:0 0 12px;text-transform:uppercase;letter-spacing:.04em}
-    .footer-col ul{list-style:none;margin:0;padding:0}
-    .footer-col li{margin-bottom:8px}
-    .footer-col a{color:rgba(255,255,255,.7);text-decoration:none;font-size:13px;transition:color .15s}
-    .footer-col a:hover{color:#10B981}
-    .footer-bottom{max-width:1100px;margin:0 auto;padding-top:16px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:rgba(255,255,255,.5);flex-wrap:wrap;gap:8px}
-    .footer-bottom a{color:rgba(255,255,255,.7)}
-    .footer-bottom a:hover{color:#fff}
-    @media(max-width:768px){.footer-inner{grid-template-columns:1fr 1fr;gap:24px}.footer-bottom{flex-direction:column;text-align:center}}
-    @media(max-width:480px){.footer-inner{grid-template-columns:1fr}}
-    /* ── Page ── */
-    body { background: #F3F4F6; }
-    .wrap { max-width: 980px; margin: 0 auto; padding: 28px 20px 0; }
-    /* ── En-tête H1 ── */
-    .rpt-header { margin-bottom: 20px; }
-    .rpt-h1 { font-size: 24px; font-weight: 800; color: #111827; margin: 0 0 10px; line-height: 1.25; }
-    .rpt-intro { font-size: 14px; color: #4B5563; margin: 0; line-height: 1.75; }
-    /* ── Sections ── */
-    .rpt-section { margin-bottom: 24px; }
-    .rpt-section-title { font-size: 18px; font-weight: 800; color: #1E3A8A; margin: 0 0 12px; padding-bottom: 8px; border-bottom: 2px solid #e5e7eb; }
-    .rpt-section-intro { font-size: 13px; color: #4B5563; margin: 0 0 14px; line-height: 1.7; }
-    /* ── Marché & FAQ ── */
-    .rpt-market, .rpt-faq { background: #fff; border-radius: 14px; padding: 20px 24px; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
-    .rpt-market p, .rpt-faq p { font-size: 13px; color: #374151; line-height: 1.75; margin: 0 0 12px; }
-    .rpt-market p:last-child, .rpt-faq p:last-child { margin-bottom: 0; }
-    .faq-item { padding: 12px 0; border-bottom: 1px solid #f3f4f6; }
-    .faq-item:last-child { border-bottom: none; padding-bottom: 0; }
-    .faq-q { font-size: 14px; font-weight: 700; color: #111827; margin: 0 0 5px; }
-    .faq-a { font-size: 13px; color: #4B5563; margin: 0; line-height: 1.7; }
-    /* ── CTA ── */
-    .rpt-cta { background: #1E3A8A; border-radius: 16px; padding: 28px; text-align: center; margin-bottom: 24px; }
-    .rpt-cta h2 { color: #fff; font-size: 18px; font-weight: 800; margin: 0 0 10px; }
-    .rpt-cta p { color: #bfdbfe; font-size: 14px; margin: 0 0 18px; line-height: 1.6; }
-    .btn-cta { display: inline-block; background: #10B981; color: #fff; font-weight: 700; font-size: 15px; padding: 12px 28px; border-radius: 10px; text-decoration: none; }
-    .btn-cta:hover { background: #059669; }
-    .est-note { font-size: 12px; color: #6B7280; margin: 6px 0 0; font-style: italic; }
-    /* ── Bandeau ── */
-    .rpt-banner {
-      background: #1E3A8A; color: #fff;
-      font-size: 13px; font-weight: 600;
-      padding: 10px 20px; text-align: center;
-      display: flex; align-items: center; justify-content: center; gap: 16px;
-    }
-    .rpt-banner a { color: #10B981; text-decoration: none; font-weight: 700; }
-    .rpt-banner a:hover { text-decoration: underline; }
-    /* ── Carte rapport ── */
-    .rpt-card {
-      background: #fff; border-radius: 16px;
-      padding: 24px; margin-bottom: 20px;
-      box-shadow: 0 2px 12px rgba(0,0,0,.06);
-    }
-    .rpt-card-top {
-      display: flex; align-items: center; justify-content: space-between;
-      padding-bottom: 16px; border-bottom: 2px solid #1E3A8A; margin-bottom: 16px;
-      flex-wrap: wrap; gap: 12px;
-    }
-    .rpt-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-    .rpt-logo svg { width: 44px; height: 44px; flex-shrink: 0; }
-    .rpt-brand-name { display: block; font-size: 20px; font-weight: 800; color: #1E3A8A; line-height: 1.1; }
-    .rpt-brand-tag  { display: block; font-size: 10px; color: #6B7280; margin-top: 2px; }
-    .rpt-date { text-align: right; font-size: 12px; color: #6B7280; }
-    .rpt-date strong { display: block; font-size: 14px; color: #111827; font-weight: 700; margin-bottom: 2px; }
-    .rpt-info {
-      background: #f0fdf4; border: 1px solid #a7f3d0;
-      border-radius: 10px; padding: 16px 20px; text-align: center;
-    }
-    .rpt-title { font-size: 18px; font-weight: 800; color: #111827; margin: 0 0 6px; }
-    .rpt-meta  { font-size: 13px; color: #4B5563; margin: 0; line-height: 1.8; }
-    /* ── Estimation ── */
-    .est-box { background: #fff; border: 1px solid #a7f3d0; border-radius: 14px; padding: 18px 22px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(16,185,129,.08); }
-    .est-box-hd { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
-    .est-title { font-size: 13px; font-weight: 700; color: #047857; text-transform: uppercase; letter-spacing: .05em; }
-    .est-cols { display: flex; gap: 10px; }
-    .est-col { flex: 1; text-align: center; padding: 14px 10px; border-radius: 12px; }
-    .est-col.low  { background: #eff6ff; }
-    .est-col.mid  { background: #1E3A8A; color: #fff; }
-    .est-col.high { background: #eff6ff; }
-    .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; opacity: .6; margin-bottom: 6px; }
-    .est-col.mid .lbl { opacity: .75; color: #bfdbfe; }
-    .val     { font-size: 22px; font-weight: 800; line-height: 1; }
-    .val-m2  { font-size: 12px; font-weight: 600; opacity: .65; margin-top: 4px; }
-    /* ── Table ── */
-    .tbl-wrap { background: #fff; border-radius: 14px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,.06); margin-bottom: 14px; }
-    table { width: 100%; border-collapse: collapse; }
-    thead tr { background: #f9fafb; }
-    th { padding: 10px 12px; text-align: left; font-size: 12px; font-weight: 700; color: #374151; border-bottom: 2px solid #e5e7eb; white-space: nowrap; }
-    th.num, td.num { text-align: right; }
-    th.ctr, td.ctr { text-align: center; }
-    td { padding: 9px 12px; border-bottom: 1px solid #f3f4f6; font-size: 13px; vertical-align: middle; }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: #f9fafb; }
-    /* ── Footer ── */
-    .site-footer { margin-top: 0; }
-    /* ── Print ── */
-    @media print {
-      .rpt-banner, .site-footer, .rpt-cta, .rpt-faq, .rpt-market, .rpt-header { display: none !important; }
-      body { background: #fff; }
-      .wrap { padding: 0; max-width: 100%; }
-      .rpt-card, .est-box, .tbl-wrap { box-shadow: none !important; border-radius: 4px !important; }
-      .val { font-size: 16px !important; }
-      td, th { font-size: 10px !important; padding: 4px 6px !important; }
-    }
-    @media (max-width: 640px) {
-      .est-cols { flex-direction: column; }
-      .rpt-card-top { flex-direction: column; }
-      .rpt-date { text-align: left; }
-      .rpt-h1 { font-size: 19px; }
-    }
-  </style>
+  <link rel="stylesheet" href="{$basePath}/assets/css/rapport-seo.css"/>
 </head>
 <body>
 
@@ -432,6 +296,15 @@ $html = <<<HTML
 
   <main>
   <div class="wrap">
+
+    <nav class="rpt-breadcrumb" aria-label="Fil d'Ariane">
+      <ol>
+        <li><a href="{$siteUrl}">Accueil</a></li>
+        <li><a href="{$siteUrl}prix-m2?mode=villes&amp;dep={$deptEsc}">Dép.&nbsp;{$deptEsc}</a></li>
+        <li><a href="{$siteUrl}prix-m2?mode=rues&amp;cp={$cpEsc}">{$commune}</a></li>
+        <li>{$voieDisplayEsc}</li>
+      </ol>
+    </nav>
 
     <div class="rpt-header">
       <h1 class="rpt-h1">Estimation immobilière — {$labelEsc}</h1>
@@ -583,5 +456,5 @@ echo json_encode([
     'ok'       => true,
     'url'      => $rapportUrl,
     'filename' => $filename,
-    'path'     => 'rapports/automatique/' . $year_ . '/' . $filename,
+    'path'     => 'rapports/automatique/' . $dept . '/' . $communeSlug . '/' . $filename,
 ], JSON_UNESCAPED_UNICODE);

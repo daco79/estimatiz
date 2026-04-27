@@ -38,7 +38,7 @@ zip -q -r "$ZIP_NAME" \
   includes/ \
   lib/ \
   assets/ \
-  rapports/.htaccess rapports/automatique/ \
+  rapports/automatique/ \
   -x "*.DS_Store"
 
 if [ $? -ne 0 ]; then

@@ -280,14 +280,26 @@ python3 build_dvf_voies.py
 
 ---
 
-## SEO — V7
+## SEO
 
-### URL rewriting (`.htaccess`)
+### Phases déployées
+
+| Phase | Date | Changements |
+|---|---|---|
+| V1 | Avril 2026 | URL rewriting, canonicals, JSON-LD, sitemap, robots |
+| V1.5 | 27/04/2026 | Headers sécurité, force www+HTTPS, `generate_results.py` V2 |
+
+---
+
+### V1 — Base SEO
+
+#### URL rewriting (`.htaccess`)
 - **301** : toute URL `.php` publique → URL propre sans extension (`/estimation.php` → `/estimation`)
+- **301** : toute URL `.html` → sans extension
 - **Rewrite interne** : Apache sert `estimation.php` quand le navigateur demande `/estimation`
 - Les APIs (`/api/`) ne sont pas concernées (appelées en JS)
 
-### Meta et structured data
+#### Meta et structured data
 - `<link rel="canonical">` sans `.php` sur toutes les pages
 - `og:url` et `og:image` sur toutes les pages (`/assets/img/og-estimatiz.png` — 1200×630px)
 - **JSON-LD `WebSite`** + `SearchAction` sur `index.php`
@@ -295,19 +307,67 @@ python3 build_dvf_voies.py
 - **JSON-LD `BreadcrumbList`** sur `estimation`, `prix-m2`, `ventes`, `methodologie`, `donnees`
 - **JSON-LD `BreadcrumbList` + `Article` + `FAQPage`** sur chaque rapport automatique
 
-### Sitemap et robots
+#### Sitemap et robots
 - `sitemap.xml` : **sitemapindex** pointant vers deux sous-sitemaps
   - `sitemap-site.xml` : 11 pages du site (priority 1.0 → 0.3)
   - `sitemap-rapports.xml` : rapports automatiques, mis à jour automatiquement à chaque génération (priority 0.7, changefreq monthly)
 - `robots.txt` : bloque `/_Base/`, `/_Backup/`, `/.cache/`, `/lib/`, `/includes/`
 
+---
+
+### V1.5 — Correctifs prioritaires (27/04/2026)
+
+#### `.htaccess` — Headers de sécurité (nouveaux)
+
+Ajout de 4 headers manquants — passage Mozilla Observatory de F → A :
+
+```
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=()
+```
+
+Vérification : `curl -I https://www.estimatiz.fr/` ou https://securityheaders.com/
+
+#### `.htaccess` — Force www + HTTPS (nouveau)
+
+```apache
+RewriteCond %{HTTPS} off [OR]
+RewriteCond %{HTTP_HOST} !^www\. [NC]
+RewriteCond %{HTTP_HOST} ^(?:www\.)?(.+)$ [NC]
+RewriteRule ^ https://www.%1%{REQUEST_URI} [R=301,L,NE]
+```
+
+Tous les canonicals utilisent `https://www.estimatiz.fr/` — le serveur est maintenant aligné.
+
+⚠️ **HSTS** : commenté dans `.htaccess`. Activer seulement après 1 mois de stabilité HTTPS : `Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"`
+
+#### `.htaccess` — Fichiers privés bloqués (nouveau)
+
+`config.local.php`, `config.o2switch.php`, `deploy.sh`, `backup.py`, `restore.py`, `generate_results.py` → 403.
+Dossiers `.cache/`, `_Base/`, `_Backup/`, `lib/`, `includes/` → 403.
+
+#### `mentions-legales.php` — À compléter
+
+Template avec 3 cas (particulier / auto-entrepreneur / société). Les `[crochets]` doivent être remplis avant déploiement.
+
+---
+
 ### Rapports automatiques SEO
 
 Génération en masse de pages HTML statiques par rue et commune, basées sur les données DVF.
 
-#### `generate_results.py`
+#### `generate_results.py` — V2
 
-Script Python en ligne de commande. Interroge directement la base MySQL `DVF_France`, calcule les statistiques et appelle `api/save-rapport-seo.php`.
+Script Python en ligne de commande (tourne **en local**, pas sur o2switch). Interroge directement la base MySQL `DVF_France`, calcule les statistiques et appelle `api/save-rapport-seo.php`.
+
+**Changement V2 vs V1 :** V1 générait 1 rapport par numéro de rue (jusqu'à 80 fichiers par rue → thin content). V2 génère **1 rapport par rue**, plus dense, sans risque de pénalité Panda.
+
+⚠️ Si des rapports V1 existent déjà, les supprimer avant de regénérer en V2 :
+```bash
+ssh zece2169@dark.o2switch.net "rm -rf ~/estimatiz.fr/rapports/automatique/2026/"
+```
 
 **Dépendances :** `mysql-connector-python`, `numpy`, `requests`
 
@@ -336,10 +396,8 @@ python3 generate_results.py --dept 69 --min-trans 15
 ```
 rapports/
   automatique/
-    .htaccess          (RewriteEngine Off, Options -Indexes)
     2026/
       75011-rue-voltaire-ad9220.html
-      75011-rue-voltaire-2315a4.html
       …
 ```
 

@@ -10,6 +10,8 @@ CHANGEMENT MAJEUR vs V1 :
 Usage :
   python generate_results.py --voie "RUE VOLTAIRE" --commune "Paris"
   python generate_results.py --dept 75 --min-trans 10
+
+  Pour le moment on a generer le 75, 91, 92, 93,
 """
 
 import argparse
@@ -106,7 +108,8 @@ def fetch_transactions(cursor, voie: str, commune_prefix: str) -> list:
             date_mutation,
             adresse_code_voie,
             code_postal,
-            nom_commune
+            nom_commune,
+            code_departement
         FROM dvf_france
         WHERE adresse_nom_voie = %s
           AND nom_commune LIKE %s
@@ -176,6 +179,7 @@ def build_payload(voie: str, rows: list, est: dict) -> dict:
     cp        = str(first['code_postal']) if first['code_postal'] else ''
     commune   = str(first['nom_commune']) if first['nom_commune'] else ''
     code_voie = str(first['adresse_code_voie']) if first['adresse_code_voie'] else ''
+    dept      = str(first.get('code_departement', '')) or (cp[:2] if cp else '')
 
     # Label = "Rue Voltaire, Paris 11e Arrondissement" (pas de numéro)
     label = f"{voie.title()}, {commune}"
@@ -204,7 +208,7 @@ def build_payload(voie: str, rows: list, est: dict) -> dict:
             'voie':      voie,
             'commune':   commune,
             'code_voie': code_voie,
-            # 'numero': supprimé — un rapport par rue
+            'dept':      dept,
         },
         'estimation': est,
         'rows':       payload_rows,
